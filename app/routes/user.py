@@ -41,3 +41,8 @@ def login(user: UserLogin, db: Session = Depends(get_db)):
     token = create_access_token(data={"sub": db_user.email}, expires_delta=access_token_expires)
     
     return {"access_token": token, "token_type": "bearer"}
+
+@router.get("/", response_model=list[UserOut])
+def get_all_users(db: Session = Depends(get_db)):
+    users = db.query(User).all()
+    return users
