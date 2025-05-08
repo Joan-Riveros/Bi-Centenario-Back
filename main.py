@@ -11,12 +11,12 @@ app = FastAPI(
 
 # Registro de routers:
 app.include_router(
-    user_public_router.router, # Router para registro y login publico 
+    user_public_router.router, 
     prefix="/users",
     tags=["Usuarios - Autenticación y Perfil Publico"] 
 )
 app.include_router(
-    admin_users_router.router, # Router para la gestion de usuarios por administradores
+    admin_users_router.router, 
     prefix="/admin/users", 
     tags=["Administración - Usuarios"] 
 )

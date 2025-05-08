@@ -24,10 +24,9 @@ MAIL_SSL_TLS: bool = str(os.getenv("MAIL_SSL_TLS", "False")).lower() == "true"
 MAIL_USE_CREDENTIALS: bool = bool(MAIL_USERNAME and MAIL_PASSWORD)
 MAIL_VALIDATE_CERTS: bool = str(os.getenv("MAIL_VALIDATE_CERTS", "True")).lower() == "true"
 
-FRONTEND_URL: str = os.getenv("FRONTEND_URL", "http://localhost:3000") # URL del frontend
+FRONTEND_URL: str = os.getenv("FRONTEND_URL", "http://localhost:3000") 
 
-# Ruta a la carpeta de plantillas
-# Asumiendo que config.py está en app/core/
+
 # Directorio raíz del proyecto (Bi-Centenario-Back)
 PROJECT_ROOT_DIR = Path(__file__).resolve().parent.parent.parent
 TEMPLATE_FOLDER_NAME: str = os.getenv("TEMPLATE_FOLDER", "app/templates/email") 
