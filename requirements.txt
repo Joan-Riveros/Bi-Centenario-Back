@@ -7,3 +7,4 @@ passlib[bcrypt]
 python-dotenv
 #alembic
 #psycopg2
+#fastapi-mail

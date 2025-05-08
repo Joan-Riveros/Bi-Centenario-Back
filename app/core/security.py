@@ -5,6 +5,8 @@ import os
 from dotenv import load_dotenv
 from app.models.user import User
 from sqlalchemy.orm import Session
+from typing import Optional
+from app.core.config import SECRET_KEY, ALGORITHM, PASSWORD_RESET_TOKEN_EXPIRE_HOURS
 
 load_dotenv()
 
@@ -32,3 +34,26 @@ def authenticate_user(db: Session, email: str, password: str):
     if not verify_password(password, user.hashed_password):
         return None
     return user
+
+#recuperacion contraseña
+
+def create_password_reset_token(email: str) -> str:
+    expire = datetime.utcnow() + timedelta(hours=PASSWORD_RESET_TOKEN_EXPIRE_HOURS)
+    to_encode = {
+        "exp": expire,
+        "nbf": datetime.utcnow(),
+        "sub": email,
+        "scope": "password_reset" 
+    }
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt
+
+def verify_password_reset_token(token: str) -> Optional[str]:
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        if payload.get("scope") == "password_reset":
+            email: Optional[str] = payload.get("sub")
+            return email
+        return None
+    except JWTError:
+        return None

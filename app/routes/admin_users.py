@@ -112,6 +112,6 @@ def delete_user_as_admin(
 
  
     deleted_user_obj = crud_user.delete_user_by_admin(db=db, user_id_to_delete=user_id)
-    if not deleted_user_obj: # Doble verificacion
+    if not deleted_user_obj:
          raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Usuario no encontrado al intentar eliminar.")
     return deleted_user_obj 

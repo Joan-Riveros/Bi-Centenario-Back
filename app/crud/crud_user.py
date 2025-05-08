@@ -6,6 +6,7 @@ from app.schemas.user import UserCreate, AdminUserCreate, AdminUserUpdate
 from app.core.security import get_password_hash
 from app.core.enums import UserRole
 
+from app.schemas.user import UserUpdateProfile
 
 def get_user(db: Session, user_id: int) -> Optional[User]:
     return db.query(User).filter(User.id == user_id).first()
@@ -75,3 +76,26 @@ def delete_user_by_admin(db: Session, user_id_to_delete: int) -> Optional[User]:
         db.delete(db_user)
         db.commit()
     return db_user 
+
+# Funcion para actualizar el perfil del propio usuario (endpoint /users/profile)
+def update_own_profile(db: Session, db_user_to_update: User, user_in: UserUpdateProfile) -> User:
+    """
+    Actualiza el perfil del propio usuario (nombre, email).
+    """
+    
+    update_data = user_in.model_dump(exclude_unset=True)
+
+    for field, value in update_data.items():
+        setattr(db_user_to_update, field, value)
+    
+    db.add(db_user_to_update)
+    db.commit()
+    db.refresh(db_user_to_update)
+    return db_user_to_update
+
+def update_password(db: Session, db_user: User, new_password: str) -> User:
+    hashed_password = get_password_hash(new_password)
+    db_user.hashed_password = hashed_password
+    db.add(db_user)
+    db.commit()
+    return db_user

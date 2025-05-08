@@ -1,4 +1,3 @@
-# main.py
 from fastapi import FastAPI
 from app.routes import user as user_public_router 
 from app.routes import admin_users as admin_users_router 

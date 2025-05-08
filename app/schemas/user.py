@@ -2,6 +2,8 @@ from pydantic import BaseModel, EmailStr
 from typing import Optional, List 
 from app.core.enums import UserRole
 
+from pydantic import Field
+
 # --- Esquemas Base  ---
 class UserBase(BaseModel):
     email: EmailStr
@@ -51,3 +53,12 @@ class AdminUserUpdate(BaseModel):
     is_active: Optional[bool] = None
     #descomentar para que admin cambie contrase;a
     # new_password: Optional[str] = None
+
+# recuperacion contraseña
+from pydantic import BaseModel, EmailStr, Field
+class PasswordResetRequest(BaseModel):
+    email: EmailStr 
+
+class PasswordReset(BaseModel):
+    token: str 
+    new_password: str = Field(..., min_length=8)
