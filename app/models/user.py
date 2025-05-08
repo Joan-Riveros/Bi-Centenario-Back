@@ -1,5 +1,7 @@
-from sqlalchemy import Column, Integer, String, Boolean
+
+from sqlalchemy import Column, Integer, String, Boolean, Enum as SAEnum
 from app.db.base import Base
+from app.core.enums import UserRole 
 
 class User(Base):
     __tablename__ = "users"
@@ -8,4 +10,6 @@ class User(Base):
     email = Column(String, unique=True, index=True, nullable=False)
     hashed_password = Column(String, nullable=False)
     is_active = Column(Boolean, default=True)
-    is_admin = Column(Boolean, default=False)
+    nombre = Column(String(100), nullable=False) 
+
+    role = Column(SAEnum(UserRole), nullable=False, default=UserRole.VISITANTE)
