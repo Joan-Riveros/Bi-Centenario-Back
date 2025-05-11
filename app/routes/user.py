@@ -1,3 +1,4 @@
+from app.core.enums import UserRole
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import Optional
@@ -30,9 +31,8 @@ def register(
     db: Session = Depends(get_db),
     current_user: Optional[User] = Depends(get_current_user)
 ):
-    # Solo admin puede registrar usuarios con rol "admin"
-    if user.role == "admin":
-        if not current_user or current_user.role != "admin":
+    if user.role == UserRole.ADMIN:
+        if not current_user or current_user.role != UserRole.ADMIN:
             raise HTTPException(
                 status_code=403,
                 detail="Solo administradores pueden registrar a otros admins"
@@ -74,18 +74,17 @@ def read_users_me(current_user: User = Depends(get_current_user)):
     return current_user
 
 @router.get("/admin-only")
-def only_admin(current_user: User = Depends(require_role(["admin"]))):
+def only_admin(current_user: User = Depends(require_role([UserRole.ADMIN]))):
     return {"message": f"Bienvenido, {current_user.email}"}
 
-# Ruta solo para administradores
 @router.get("/admin/dashboard")
-def admin_dashboard(current_user: User = Depends(require_role(["admin"]))):
+def admin_dashboard(current_user: User = Depends(require_role([UserRole.ADMIN]))):
     return {"msg": f"Bienvenido al panel de administrador, {current_user.email}"}
 
-# Ruta para administradores y editores
 @router.get("/editor/panel")
-def editor_panel(current_user: User = Depends(require_role(["admin", "editor"]))):
+def editor_panel(current_user: User = Depends(require_role([UserRole.ADMIN, UserRole.INVESTIGADOR]))):
     return {"msg": f"Bienvenido al panel del editor, {current_user.email}"}
+
 
 # Ruta accesible para cualquier usuario autenticado
 @router.get("/profile")

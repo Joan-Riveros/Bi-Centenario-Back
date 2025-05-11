@@ -1,3 +1,4 @@
+from app.core.enums import UserRole
 from datetime import datetime, timedelta
 from jose import jwt, JWTError
 from passlib.context import CryptContext
@@ -11,7 +12,7 @@ from sqlalchemy.orm import Session
 from app.models.user import User
 from app.schemas.user import TokenData
 from app.db.session import SessionLocal
-
+from typing import List
 # Cargar variables de entorno
 load_dotenv()
 
@@ -84,7 +85,7 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
 
 
 # Middleware de rol requerido
-def require_role(required_roles: list[str]):
+def require_role(required_roles: List[UserRole]):
     def role_checker(current_user: User = Depends(get_current_user)):
         if current_user.role not in required_roles:
             raise HTTPException(status_code=403, detail="No tienes permiso para acceder a esta ruta")
