@@ -76,3 +76,22 @@ def read_users_me(current_user: User = Depends(get_current_user)):
 @router.get("/admin-only")
 def only_admin(current_user: User = Depends(require_role(["admin"]))):
     return {"message": f"Bienvenido, {current_user.email}"}
+
+# Ruta solo para administradores
+@router.get("/admin/dashboard")
+def admin_dashboard(current_user: User = Depends(require_role(["admin"]))):
+    return {"msg": f"Bienvenido al panel de administrador, {current_user.email}"}
+
+# Ruta para administradores y editores
+@router.get("/editor/panel")
+def editor_panel(current_user: User = Depends(require_role(["admin", "editor"]))):
+    return {"msg": f"Bienvenido al panel del editor, {current_user.email}"}
+
+# Ruta accesible para cualquier usuario autenticado
+@router.get("/profile")
+def get_profile(current_user: User = Depends(get_current_user)):
+    return {
+        "email": current_user.email,
+        "role": current_user.role,
+        "active": current_user.is_active
+    }

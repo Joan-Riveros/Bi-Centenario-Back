@@ -58,30 +58,30 @@ def get_db():
         db.close()
 
 # Obtener usuario actual desde el token
-def get_current_user(
-    token: HTTPAuthorizationCredentials = Depends(oauth2_scheme),
-    db: Session = Depends(get_db)
-    
-    
-) -> User:
+def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> User:
+    print("🔑 Token recibido:", token.credentials)  # Agregado
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="No se pudo validar las credenciales",
         headers={"WWW-Authenticate": "Bearer"},
     )
     try:
-        payload = jwt.decode(token.credentials, SECRET_KEY, algorithms=[ALGORITHM])
+        payload = jwt.decode(token.credentials, SECRET_KEY, algorithms=[ALGORITHM])  # token.credentials!
+        print("📥 Payload decodificado:", payload)  # Agregado
         email: str = payload.get("sub")
         if email is None:
             raise credentials_exception
         token_data = TokenData(email=email)
-    except JWTError:
+    except JWTError as e:
+        print("❌ Error al decodificar JWT:", e)  # Agregado
         raise credentials_exception
 
     user = db.query(User).filter(User.email == token_data.email).first()
+    print("👤 Usuario encontrado en DB:", user.email if user else "None")  # Agregado
     if user is None:
         raise credentials_exception
     return user
+
 
 # Middleware de rol requerido
 def require_role(required_roles: list[str]):
