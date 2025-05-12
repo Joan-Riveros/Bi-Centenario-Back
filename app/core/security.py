@@ -1,41 +1,51 @@
 from datetime import datetime, timedelta
-from jose import jwt
+from jose import jwt, JWTError
 from passlib.context import CryptContext
-import os
-from dotenv import load_dotenv
-from app.models.user import User
-from sqlalchemy.orm import Session
-from typing import Optional
-from app.core.config import SECRET_KEY, ALGORITHM, PASSWORD_RESET_TOKEN_EXPIRE_HOURS
+from typing import Optional 
+import logging
 
-load_dotenv()
+from sqlalchemy.orm import Session
+
+from app.models.user import User
+
+from app.core.config import (
+    SECRET_KEY,
+    ALGORITHM,
+    ACCESS_TOKEN_EXPIRE_MINUTES,
+    PASSWORD_RESET_TOKEN_EXPIRE_HOURS
+)
+
+logger = logging.getLogger(__name__)
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-SECRET_KEY = os.getenv("SECRET_KEY")
-ALGORITHM = os.getenv("ALGORITHM")
-
-def get_password_hash(password: str):
+def get_password_hash(password: str) -> str:
     return pwd_context.hash(password)
 
-def verify_password(plain_password: str, hashed_password: str):
+def verify_password(plain_password: str, hashed_password: str) -> bool:
     return pwd_context.verify(plain_password, hashed_password)
 
-def create_access_token(data: dict, expires_delta: timedelta = None):
+def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
     to_encode = data.copy()
-    expire = datetime.utcnow() + (expires_delta or timedelta(minutes=15))
+    if expires_delta:
+        expire = datetime.utcnow() + expires_delta
+    else:
+        expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     to_encode.update({"exp": expire})
-    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt
 
-def authenticate_user(db: Session, email: str, password: str):
+def authenticate_user(db: Session, email: str, password: str) -> Optional[User]:
     user = db.query(User).filter(User.email == email).first()
     if not user:
+        logger.debug(f"Intento de autenticacipn fallido: Usuario no encontrado - {email}")
         return None
     if not verify_password(password, user.hashed_password):
+        logger.debug(f"Intento de autenticacipn fallido: Contraseña incorrecta para el usuario - {email}")
         return None
+    logger.info(f"Usuario autenticado exitosamente: {email}")
     return user
 
-#recuperacion contraseña
 
 def create_password_reset_token(email: str) -> str:
     expire = datetime.utcnow() + timedelta(hours=PASSWORD_RESET_TOKEN_EXPIRE_HOURS)
@@ -43,7 +53,7 @@ def create_password_reset_token(email: str) -> str:
         "exp": expire,
         "nbf": datetime.utcnow(),
         "sub": email,
-        "scope": "password_reset" 
+        "scope": "password_reset"
     }
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
@@ -54,6 +64,8 @@ def verify_password_reset_token(token: str) -> Optional[str]:
         if payload.get("scope") == "password_reset":
             email: Optional[str] = payload.get("sub")
             return email
+        logger.warning("Intento de verificación de token de reseteo con scope incorrecto")
         return None
-    except JWTError:
+    except JWTError as e:
+        logger.error(f"Error al decodificar token de reseteo de contraseña: {e}")
         return None

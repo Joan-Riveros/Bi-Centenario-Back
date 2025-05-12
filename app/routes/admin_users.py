@@ -1,8 +1,6 @@
-
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List
-
 
 from app.core.dependencies import get_db, require_admin_user
 from app.models.user import User 
@@ -15,7 +13,7 @@ router = APIRouter()
 def create_user_as_admin(
     user_in: AdminUserCreate,
     db: Session = Depends(get_db),
-    current_admin: User = Depends(require_admin_user) # Protege la ruta
+    current_admin: User = Depends(require_admin_user) 
 ):
     """
     Crear un nuevo usuario como administrador.
@@ -24,7 +22,7 @@ def create_user_as_admin(
     if existing_user:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Un usuario con este email ya existe en el sistema.",
+            detail="Un usuario con este email ya existe en el sistema",
         )
     user = crud_user.create_user_by_admin(db=db, user_in=user_in)
     return user
@@ -35,7 +33,7 @@ def read_users_as_admin(
     skip: int = 0,
     limit: int = 100,
     db: Session = Depends(get_db),
-    current_admin: User = Depends(require_admin_user) # Protege la ruta
+    current_admin: User = Depends(require_admin_user) 
 ):
     """
     Obtener una lista de usuarios. (Acceso de Administrador)
@@ -48,7 +46,7 @@ def read_users_as_admin(
 def read_user_as_admin(
     user_id: int,
     db: Session = Depends(get_db),
-    current_admin: User = Depends(require_admin_user) # Protege la ruta
+    current_admin: User = Depends(require_admin_user)
 ):
     """
     Obtener un usuario específico por ID. (Acceso de Administrador)
@@ -64,7 +62,7 @@ def update_user_as_admin(
     user_id: int,
     user_in: AdminUserUpdate,
     db: Session = Depends(get_db),
-    current_admin: User = Depends(require_admin_user) # Protege la ruta
+    current_admin: User = Depends(require_admin_user) 
 ):
     """
     Actualizar un usuario. (Acceso de Administrador)
@@ -76,7 +74,7 @@ def update_user_as_admin(
             detail="Usuario no encontrado",
         )
 
-    # Validar que el email, si se cambia, no E ya en uso por otro usuario
+    
     if user_in.email and user_in.email != db_user_to_update.email:
         existing_user_with_new_email = crud_user.get_user_by_email(db, email=user_in.email)
         if existing_user_with_new_email and existing_user_with_new_email.id != user_id:
@@ -94,15 +92,15 @@ def update_user_as_admin(
 def delete_user_as_admin(
     user_id: int,
     db: Session = Depends(get_db),
-    current_admin: User = Depends(require_admin_user) # Protege la ruta
+    current_admin: User = Depends(require_admin_user) 
 ):
     """
     Eliminar un usuario. (Acceso de Administrador)
     """
-    if user_id == current_admin.id: # Evita QUE UN ADMIN SE AUTOELIMINE
+    if user_id == current_admin.id: 
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Los administradores no pueden eliminar su propia cuenta a través de este endpoint.",
+            detail="Los administradores no pueden eliminar su propia cuenta a través de este endpoint",
         )
         
     db_user_to_delete = crud_user.get_user(db, user_id=user_id)
@@ -113,5 +111,5 @@ def delete_user_as_admin(
  
     deleted_user_obj = crud_user.delete_user_by_admin(db=db, user_id_to_delete=user_id)
     if not deleted_user_obj:
-         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Usuario no encontrado al intentar eliminar.")
+         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Usuario no encontrado al intentar eliminar")
     return deleted_user_obj 

@@ -7,7 +7,7 @@ from app.schemas.user import UserCreate, UserOut, UserLogin, UserUpdateProfile
 from app.models.user import User 
 from app.core.security import get_password_hash, create_access_token, authenticate_user
 from app.core.config import ACCESS_TOKEN_EXPIRE_MINUTES
-# from app.core.enums import UserRole
+
 from app.crud import crud_user
 
 
@@ -17,34 +17,14 @@ from app.core.dependencies import get_current_active_user, get_db #
 router = APIRouter()
 
 # Dependencia obtener sesion BD
+""""
 def get_db():
     db = SessionLocal()
     try:
         yield db
     finally:
         db.close()
-
-@router.post("/register", response_model=UserOut) 
-def register(user_in: UserCreate, db: Session = Depends(get_db)): 
-    db_user = db.query(User).filter(User.email == user_in.email).first()
-    if db_user:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Email ya registrado")
-
-    hashed_password = get_password_hash(user_in.password)
-
-
-    new_user = User(
-        email=user_in.email,
-        hashed_password=hashed_password,
-        nombre=user_in.nombre, 
-        role=user_in.role     
-    )
-
-    db.add(new_user)
-    db.commit()
-    db.refresh(new_user)
-    return new_user 
-
+"""
 
 @router.post("/login")
 def login(form_data: UserLogin, db: Session = Depends(get_db)):
@@ -52,7 +32,7 @@ def login(form_data: UserLogin, db: Session = Depends(get_db)):
     if not db_user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Credenciales inválidas",
+            detail="Credenciales invalidas",
             headers={"WWW-Authenticate": "Bearer"},
         )
     
@@ -76,7 +56,6 @@ def register(user_in: UserCreate, db: Session = Depends(get_db)):
 
 
 
-# Modificaciones para el CRUD de usuarios por el usuario mismo
 @router.get("/me", response_model=UserOut)
 async def read_users_me(
     current_user: User = Depends(get_current_active_user)
@@ -102,7 +81,7 @@ async def update_users_me(
         if existing_user_with_new_email: 
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
-                detail="Este correo electronico ya está registrado por otro usuario",
+                detail="Este correo electronico ya esta registrado por otro usuario",
             )
     
     updated_user = crud_user.update_own_profile(db=db, db_user_to_update=current_user, user_in=user_in)
@@ -122,7 +101,7 @@ async def request_password_recovery(
 
     if user and user.is_active:
         password_reset_token = create_password_reset_token(email=user.email)
-        # ¡Aquí se llama a tu servicio de email actualizado!
+        
         success = await email_service.send_password_reset_email(
             email_to=user.email, username=user.nombre, token=password_reset_token
         )
@@ -132,7 +111,7 @@ async def request_password_recovery(
     else:
         print(f"Solicitud de reseteo para email no encontrado o usuario inactivo: {password_request.email}")
 
-    return {"msg": "Si tu correo electronico está registrado y activo, recibiras instrucciones para restablecer tu contraseña en breve"}
+    return {"msg": "Si tu correo electronico esta registrado y activo, recibiras instrucciones para restablecer tu contraseña en breve"}
 
 
 @router.post("/reset-password", status_code=status.HTTP_200_OK)
@@ -144,7 +123,7 @@ async def perform_password_reset(
     if not email:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="El token de restablecimiento es invalido o ha expirado.",
+            detail="El token de restablecimiento es invalido o ha expirado",
         )
     
     user = crud_user.get_user_by_email(db, email=email)

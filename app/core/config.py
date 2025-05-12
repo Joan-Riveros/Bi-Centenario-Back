@@ -27,7 +27,7 @@ MAIL_VALIDATE_CERTS: bool = str(os.getenv("MAIL_VALIDATE_CERTS", "True")).lower(
 FRONTEND_URL: str = os.getenv("FRONTEND_URL", "http://localhost:3000") 
 
 
-# Directorio raíz del proyecto (Bi-Centenario-Back)
+# Directorio raiz del proyecto (Bi-Centenario-Back)
 PROJECT_ROOT_DIR = Path(__file__).resolve().parent.parent.parent
 TEMPLATE_FOLDER_NAME: str = os.getenv("TEMPLATE_FOLDER", "app/templates/email") 
 TEMPLATE_ABSOLUTE_PATH = PROJECT_ROOT_DIR / TEMPLATE_FOLDER_NAME

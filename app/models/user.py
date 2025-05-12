@@ -1,4 +1,4 @@
-
+from sqlalchemy.orm import relationship
 from sqlalchemy import Column, Integer, String, Boolean, Enum as SAEnum
 from app.db.base import Base
 from app.core.enums import UserRole 
@@ -13,3 +13,5 @@ class User(Base):
     nombre = Column(String(100), nullable=False) 
 
     role = Column(SAEnum(UserRole), nullable=False, default=UserRole.VISITANTE)
+    #
+    notifications = relationship("Notification", back_populates="recipient", cascade="all, delete-orphan")

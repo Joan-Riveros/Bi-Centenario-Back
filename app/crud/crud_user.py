@@ -5,7 +5,6 @@ from app.models.user import User
 from app.schemas.user import UserCreate, AdminUserCreate, AdminUserUpdate 
 from app.core.security import get_password_hash
 from app.core.enums import UserRole
-
 from app.schemas.user import UserUpdateProfile
 
 def get_user(db: Session, user_id: int) -> Optional[User]:
@@ -27,8 +26,8 @@ def create_public_user(db: Session, user_in: UserCreate) -> User:
         email=user_in.email,
         hashed_password=hashed_password,
         nombre=user_in.nombre,
-        role=user_in.role, 
-        is_active=True 
+        role=UserRole.VISITANTE,
+        is_active=True
     )
     db.add(db_user)
     db.commit()
@@ -36,7 +35,7 @@ def create_public_user(db: Session, user_in: UserCreate) -> User:
     return db_user
 
 
-# Funcion para la creación de usuarios por un admin
+# Funcion para la creacion de usuarios por un admin
 def create_user_by_admin(db: Session, user_in: AdminUserCreate) -> User:
     hashed_password = get_password_hash(user_in.password)
     db_user = User(

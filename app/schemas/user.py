@@ -8,7 +8,6 @@ from pydantic import Field
 class UserBase(BaseModel):
     email: EmailStr
     nombre: str
-    role: UserRole
 
 # --- Esquemas para Operaciones Especificas  ---
 class UserCreate(UserBase): # Para registro publico
@@ -17,7 +16,7 @@ class UserCreate(UserBase): # Para registro publico
 class UserOut(UserBase):
     id: int
     is_active: bool
-    model_config = {"from_attributes": True} # Pydantic V2
+    model_config = {"from_attributes": True} 
 
 class UserLogin(BaseModel):
     email: EmailStr
@@ -41,6 +40,7 @@ class UserUpdateProfile(BaseModel):
 # Esquema administrador nuevo usuario
 class AdminUserCreate(UserBase): # Hereda email, nombre, role
     password: str
+    role: UserRole
     is_active: Optional[bool] = True
 
 
