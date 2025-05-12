@@ -101,7 +101,9 @@ async def request_password_recovery(
 
     if user and user.is_active:
         password_reset_token = create_password_reset_token(email=user.email)
-        
+        #
+        print(f"Token de reseteo para {user.email}: {password_reset_token}")
+            
         success = await email_service.send_password_reset_email(
             email_to=user.email, username=user.nombre, token=password_reset_token
         )

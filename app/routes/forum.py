@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from typing import List, Optional
-
+from app.core.enums import UserRole
 
 from app.db.session import get_db 
 
@@ -28,10 +28,11 @@ router = APIRouter()
     status_code=status.HTTP_201_CREATED,
     summary="Crear una nueva categoria del foro (Solo Admin)"
 )
+
 def create_category_route( 
     category_in: ForumCategoryCreate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_role(["ADMINISTRADOR"])) 
+    current_user: User = Depends(require_role([UserRole.ADMINISTRADOR])) 
 ):
     existing_category = crud_forum.get_forum_category_by_name(db, name=category_in.name)
     if existing_category:
