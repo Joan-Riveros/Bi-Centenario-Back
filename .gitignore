@@ -1,0 +1,57 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Entornos virtuales
+venv/
+.venv/
+ENV/
+env/
+.ENV/
+.env/
+
+# Archivos de entorno
+.env
+.env.*
+
+# Logs
+*.log
+
+# Archivos de configuración del IDE
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# Archivos generados por FastAPI / Uvicorn
+*.sqlite3
+*.db
+instance/
+
+# pytest
+.pytest_cache/
+
+# mypy
+.mypy_cache/
+
+# coverage
+htmlcov/
+.coverage
+
+# PyInstaller
+dist/
+build/
+
+# Docker
+*.pid
+
+# Git
+.gitignore
+
+# Otros
+*.bak
