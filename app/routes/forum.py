@@ -60,12 +60,12 @@ def create_category_route(
 )
 def get_categories_route( 
     db: Session = Depends(get_db),
-    skip: int = Query(0, ge=0, description="Nimero de iiems a saltar"),
+    skip: int = Query(0, ge=0, description="Nimero de items a saltar"),
     limit: int = Query(10, ge=1, le=100, description="Numero maximo de items a retornar")
 ):
     return crud_forum.get_forum_categories(db=db, skip=skip, limit=limit)
 
-# -------- TEMAS (HILOS) --------
+# -------- TEMAS --------
 @router.post(
     "/topics/",
     response_model=ForumTopicOut,
@@ -84,7 +84,7 @@ def create_topic_route(
     
     db_topic = crud_forum.create_forum_topic(db=db, topic_in=topic_in, author_id=current_user.id)
     if db_topic is None: 
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Categoria no encontrada.")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Categoria no encontrada")
     try:
         db.commit()
         db.refresh(db_topic)
@@ -153,7 +153,7 @@ def get_posts_route(
     topic_id: Optional[int] = Query(None, description="Filtrar respuestas por ID de tema"),
     db: Session = Depends(get_db),
     skip: int = Query(0, ge=0, description="Numero de items a saltar"),
-    limit: int = Query(10, ge=1, le=100, description="Numero máximo de tems a retornar")
+    limit: int = Query(10, ge=1, le=100, description="Numero maximo de tems a retornar")
 ):
     if topic_id is not None:
         topic = crud_forum.get_forum_topic_by_id(db, topic_id=topic_id)
@@ -186,12 +186,12 @@ def search_topics_route(
     response_model=List[ForumPostOut],
     summary="Buscar respuestas por palabra clave"
 )
-def search_responses_route( # Renombrado
+def search_responses_route(
     keyword: str = Query(..., min_length=3, description="Palabra clave para buscar en el contenido de las respuestas"),
     topic_id: Optional[int] = Query(None, description="Opcional: ID del tema para acotar la busqueda"),
     db: Session = Depends(get_db),
     skip: int = Query(0, ge=0, description="Numero de items a saltar"),
-    limit: int = Query(10, ge=1, le=50, description="Numero máximo de items a retornar")
+    limit: int = Query(10, ge=1, le=50, description="Numero maximo de items a retornar")
 ):
     return crud_forum.search_forum_posts(
         db=db, keyword=keyword, topic_id=topic_id, skip=skip, limit=limit

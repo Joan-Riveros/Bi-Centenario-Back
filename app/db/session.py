@@ -11,7 +11,6 @@ engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 #
-# app/db/session.py
 from sqlalchemy.orm import Session
 
 def get_db():

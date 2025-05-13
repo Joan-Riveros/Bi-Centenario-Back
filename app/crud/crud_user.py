@@ -76,7 +76,7 @@ def delete_user_by_admin(db: Session, user_id_to_delete: int) -> Optional[User]:
         db.commit()
     return db_user 
 
-# Funcion para actualizar el perfil del propio usuario (endpoint /users/profile)
+# Funcion para actualizar el perfil del propio usuario
 def update_own_profile(db: Session, db_user_to_update: User, user_in: UserUpdateProfile) -> User:
     """
     Actualiza el perfil del propio usuario (nombre, email).

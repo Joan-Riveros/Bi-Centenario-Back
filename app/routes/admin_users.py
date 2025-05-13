@@ -16,7 +16,7 @@ def create_user_as_admin(
     current_admin: User = Depends(require_admin_user) 
 ):
     """
-    Crear un nuevo usuario como administrador.
+    Crear un nuevo usuario como administrador
     """
     existing_user = crud_user.get_user_by_email(db, email=user_in.email)
     if existing_user:
@@ -36,7 +36,7 @@ def read_users_as_admin(
     current_admin: User = Depends(require_admin_user) 
 ):
     """
-    Obtener una lista de usuarios. (Acceso de Administrador)
+    Obtener una lista de usuarios (Acceso de Administrador)
     """
     users = crud_user.get_users(db, skip=skip, limit=limit)
     return users
@@ -49,7 +49,7 @@ def read_user_as_admin(
     current_admin: User = Depends(require_admin_user)
 ):
     """
-    Obtener un usuario específico por ID. (Acceso de Administrador)
+    Obtener un usuario especifico por ID 
     """
     db_user = crud_user.get_user(db, user_id=user_id)
     if db_user is None:
@@ -65,7 +65,7 @@ def update_user_as_admin(
     current_admin: User = Depends(require_admin_user) 
 ):
     """
-    Actualizar un usuario. (Acceso de Administrador)
+    Actualizar usuario (Acceso de Administrador)
     """
     db_user_to_update = crud_user.get_user(db, user_id=user_id)
     if not db_user_to_update:
@@ -80,7 +80,7 @@ def update_user_as_admin(
         if existing_user_with_new_email and existing_user_with_new_email.id != user_id:
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
-                detail="El nuevo email ya está registrado por otro usuario.",
+                detail="El nuevo email esta registrado por otro usuario",
             )
     
 
@@ -95,12 +95,12 @@ def delete_user_as_admin(
     current_admin: User = Depends(require_admin_user) 
 ):
     """
-    Eliminar un usuario. (Acceso de Administrador)
+    Eliminar un usuario(Acceso de Administrador)
     """
     if user_id == current_admin.id: 
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Los administradores no pueden eliminar su propia cuenta a través de este endpoint",
+            detail="Los administradores no pueden eliminar su propia cuenta mediante este endpoint",
         )
         
     db_user_to_delete = crud_user.get_user(db, user_id=user_id)

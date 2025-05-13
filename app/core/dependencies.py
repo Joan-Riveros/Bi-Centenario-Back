@@ -84,7 +84,7 @@ def require_role(required_roles: List[UserRole]):
             )
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail=f"No tienes permiso para acceder a este recurso."
+                detail=f"No tienes permiso para acceder a este recurso"
             )
         return current_active_user
     return role_checker

@@ -88,8 +88,8 @@ def verify_remember_device_token(token: str) -> Optional[dict]:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM], options={"verify_aud": False})
         if payload.get("scope") == "remember_device":
             return payload
-        logger.warning("Token 'remember_device' con scope incorrecto.")
+        logger.warning("Token 'remember_device' con scope incorrecto")
         return None
     except JWTError as e:
-        logger.info(f"Token 'remember_device' inválido o expirado: {e}") 
+        logger.info(f"Token 'remember_device' invalido o expirado: {e}") 
         return None

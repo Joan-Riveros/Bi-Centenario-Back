@@ -8,3 +8,6 @@ python-dotenv
 #alembic
 #psycopg2
 #fastapi-mail
+#cryptography
+#pyotp
+#qrcode[pil]
