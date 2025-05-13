@@ -21,7 +21,7 @@ from app.db.base import Base
 from app.models.user import User
 from app.models.forum import ForumCategory, ForumTopic, ForumPost
 from app.models.notification import Notification 
-
+from app.models.two_factor import User2FASetting
 
 
 config = context.config
@@ -29,7 +29,7 @@ config = context.config
 
 DATABASE_URL_FROM_ENV = os.getenv("DATABASE_URL")
 if not DATABASE_URL_FROM_ENV:
-    raise ValueError("DATABASE_URL no está configurada en el archivo .env o no se pudo cargar")
+    raise ValueError("DATABASE_URL no esta configurada en el archivo .env o no se pudo cargar")
 
 config.set_main_option("sqlalchemy.url", DATABASE_URL_FROM_ENV)
 

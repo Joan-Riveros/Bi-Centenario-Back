@@ -46,3 +46,18 @@ mail_config = ConnectionConfig(
     VALIDATE_CERTS=MAIL_VALIDATE_CERTS,
     TEMPLATE_FOLDER=TEMPLATE_ABSOLUTE_PATH 
 )
+
+#2fa
+REMEMBER_DEVICE_COOKIE_NAME: str = "remember_2fa_device"
+REMEMBER_DEVICE_TOKEN_EXPIRE_DAYS: int = 30
+
+TWO_FACTOR_ENCRYPTION_KEY: bytes = os.getenv("TWO_FACTOR_ENCRYPTION_KEY", "").encode('utf-8')
+if not TWO_FACTOR_ENCRYPTION_KEY:
+    
+    print("ADVERTENCIA: TWO_FACTOR_ENCRYPTION_KEY no esta configurada. Usando una clave de desarrollo (NO SEGURA).")
+    # from cryptography.fernet import Fernet
+    # TWO_FACTOR_ENCRYPTION_KEY = Fernet.generate_key() # Solo para desarrollo y si se va a persistir
+
+
+
+

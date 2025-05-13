@@ -3,7 +3,7 @@ from jose import jwt, JWTError
 from passlib.context import CryptContext
 from typing import Optional 
 import logging
-
+from app.core.config import REMEMBER_DEVICE_TOKEN_EXPIRE_DAYS
 from sqlalchemy.orm import Session
 
 from app.models.user import User
@@ -68,4 +68,28 @@ def verify_password_reset_token(token: str) -> Optional[str]:
         return None
     except JWTError as e:
         logger.error(f"Error al decodificar token de reseteo de contraseña: {e}")
+        return None
+
+
+
+#2fa
+def create_remember_device_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
+    to_encode = data.copy()
+    if expires_delta:
+        expire = datetime.utcnow() + expires_delta
+    else:
+        expire = datetime.utcnow() + timedelta(days=REMEMBER_DEVICE_TOKEN_EXPIRE_DAYS) 
+    to_encode.update({"exp": expire, "scope": "remember_device"}) 
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM) 
+    return encoded_jwt
+
+def verify_remember_device_token(token: str) -> Optional[dict]: 
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM], options={"verify_aud": False})
+        if payload.get("scope") == "remember_device":
+            return payload
+        logger.warning("Token 'remember_device' con scope incorrecto.")
+        return None
+    except JWTError as e:
+        logger.info(f"Token 'remember_device' inválido o expirado: {e}") 
         return None

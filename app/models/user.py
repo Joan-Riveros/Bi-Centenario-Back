@@ -15,3 +15,10 @@ class User(Base):
     role = Column(SAEnum(UserRole), nullable=False, default=UserRole.VISITANTE)
     #
     notifications = relationship("Notification", back_populates="recipient", cascade="all, delete-orphan")
+
+    two_factor_setting = relationship(
+        "User2FASetting",
+        uselist=False,
+        back_populates="user",
+        cascade="all, delete-orphan"
+    )
