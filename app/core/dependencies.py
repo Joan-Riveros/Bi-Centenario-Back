@@ -1,10 +1,10 @@
 from fastapi import Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer
+from fastapi.security import HTTPBearer
 from jose import JWTError, jwt
 from sqlalchemy.orm import Session
 import logging
 from typing import List, Optional 
-
+from fastapi.security import HTTPAuthorizationCredentials
 from app.core.config import SECRET_KEY, ALGORITHM
 from app.models.user import User
 from app.crud import crud_user
@@ -12,7 +12,7 @@ from app.db.session import SessionLocal
 from app.core.enums import UserRole 
 logger = logging.getLogger(__name__)
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/users/login")
+bearer_scheme = HTTPBearer()
 
 def get_db():
     db = SessionLocal()
@@ -22,7 +22,7 @@ def get_db():
         db.close()
 
 async def get_current_user(
-    db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)
+    db: Session = Depends(get_db), token: HTTPAuthorizationCredentials = Depends(bearer_scheme)
 ) -> User:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -30,7 +30,7 @@ async def get_current_user(
         headers={"WWW-Authenticate": "Bearer"},
     )
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        payload = jwt.decode(token.credentials, SECRET_KEY, algorithms=[ALGORITHM])  # ✅
         email: Optional[str] = payload.get("sub")
         if email is None:
             logger.warning("Token JWT no contiene 'sub' (email).")

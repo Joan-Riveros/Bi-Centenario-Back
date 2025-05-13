@@ -5,9 +5,9 @@ psycopg2-binary
 python-jose
 passlib[bcrypt]
 python-dotenv
-#alembic
-#psycopg2
-#fastapi-mail
-#cryptography
-#pyotp
-#qrcode[pil]
+alembic
+psycopg2
+fastapi-mail
+cryptography
+pyotp
+qrcode[pil]

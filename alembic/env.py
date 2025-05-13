@@ -3,6 +3,7 @@ from sqlalchemy import engine_from_config
 from sqlalchemy import pool 
 from sqlalchemy import create_engine 
 from alembic import context
+from app.db.base import Base  # ← contiene todos tus modelos importados
 
 import os
 import sys
@@ -13,6 +14,7 @@ from dotenv import load_dotenv
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.insert(0, PROJECT_ROOT)
 load_dotenv(os.path.join(PROJECT_ROOT, '.env')) 
+print("📦 Usando base de datos:", os.getenv("DATABASE_URL"))
 
 
 # Es CRUCIAL que todos los modelos SQLAlchemy que Alembic debe gestionar
