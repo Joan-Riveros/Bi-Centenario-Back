@@ -15,9 +15,9 @@ async def send_password_reset_email(email_to: EmailStr, username: str, token: st
     template_context: Dict[str, Any] = {
         "username": username,
         "project_name": PROJECT_NAME,
-        "reset_url": reset_url,
+        "reset_url": f"{FRONTEND_URL}/reset-password?token={token}",
         "expire_hours": PASSWORD_RESET_TOKEN_EXPIRE_HOURS,
-        # "token": token # El token esta already en la reset_url, opcional pasarlo de nuevo al template
+        
     }
 
     message = MessageSchema(

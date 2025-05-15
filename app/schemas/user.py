@@ -10,12 +10,13 @@ class UserBase(BaseModel):
     nombre: str
 
 # --- Esquemas para Operaciones Especificas  ---
-class UserCreate(UserBase): # Para registro publico
+class UserCreate(UserBase):
     password: str
 
 class UserOut(UserBase):
     id: int
     is_active: bool
+    role: UserRole
     model_config = {"from_attributes": True} 
 
 class UserLogin(BaseModel):
@@ -38,7 +39,7 @@ class UserUpdateProfile(BaseModel):
 # --- ESQUEMAN ADMIN ---
 
 # Esquema administrador nuevo usuario
-class AdminUserCreate(UserBase): # Hereda email, nombre, role
+class AdminUserCreate(UserBase): 
     password: str
     role: UserRole
     is_active: Optional[bool] = True
@@ -62,3 +63,8 @@ class PasswordResetRequest(BaseModel):
 class PasswordReset(BaseModel):
     token: str 
     new_password: str = Field(..., min_length=8)
+
+# --- Nuevo esquema para incluir estado 2FA ---
+class UserOutWith2FA(UserOut):
+    is_2fa_enabled: bool
+    model_config = {"from_attributes": True}

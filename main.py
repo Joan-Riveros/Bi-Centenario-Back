@@ -3,11 +3,30 @@ from app.routes import user as user_public_router
 from app.routes import admin_users as admin_users_router 
 from app.routes import forum
 from app.routes import notification
+#FRONTEND
+from fastapi.middleware.cors import CORSMiddleware
+#
 app = FastAPI(
     title="Repositorio de Documentos Historicos Digitalizados",
     description="API para la gestion y acceso a documentos historicos digitalizados",
     version="0.1.0", 
     # metadatos API
+)
+
+
+
+origins = [
+    "http://localhost",         
+    "http://localhost:3000",    
+    "http://localhost:5173",    
+    
+]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,  
+    allow_credentials=True, 
+    allow_methods=["*"],    
+    allow_headers=["*"],
 )
 
 # Registro de routers:

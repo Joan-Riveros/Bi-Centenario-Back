@@ -1,23 +1,63 @@
-# Entornos virtuales
-venv/
-env/
-.venv/
-
-# Archivos compilados de Python
-__pycache__/
-*.py[cod]
-
-# Variables de entorno
-.env
-
-# Configuracion de editores/IDE
-.vscode/
-.idea/
-
-# Archivos de sistema
-.DS_Store
-Thumbs.db
-
+# Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# IDE/editor settings
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Environment variables
+.env
+.env.*
+
+# Testing / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+
+# MyPy
+.mypy_cache/
+.dmypy.json
+.pyre/
+
+# Pip
+pip-log.txt
+pip-delete-this-directory.txt
+*.egg
+*.egg-info/
+dist/
+build/
+wheelhouse/
+*.whl
+
+# Alembic
+# (Normalmente quieres versionar las migraciones en alembic/versions,
+#  pero puedes ignorar temporalmente archivos de lock u otros artefactos)
+alembic/*.lock
+
+# SQLite databases (si usas SQLite local para desarrollo)
+*.db
+*.sqlite3
+
+# Docker
+docker-compose.override.yml
+
+# MacOS
+.DS_Store
+
+# Logs
+*.log

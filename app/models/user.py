@@ -22,3 +22,10 @@ class User(Base):
         back_populates="user",
         cascade="all, delete-orphan"
     )
+    #two facotr
+    @property
+    def is_2fa_enabled(self) -> bool:
+        """Determina si el usuario tiene 2FA habilitado."""
+        if self.two_factor_setting:
+            return self.two_factor_setting.is_enabled
+        return False

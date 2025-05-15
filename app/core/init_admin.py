@@ -27,7 +27,7 @@ def create_default_admin():
             hashed_password=get_password_hash(DEFAULT_ADMIN_PASSWORD),
             is_active=True,
             nombre="Administrador del Sistema", 
-            role=UserRole.ADMINISTRADOR 
+            role=UserRole.ADMINISTRADOR
         )
         db.add(admin_user)
         db.commit()

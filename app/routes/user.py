@@ -1,10 +1,11 @@
-from fastapi import APIRouter, Depends, HTTPException, status, request
+from fastapi import APIRouter, Depends, HTTPException, status
+from starlette.requests import Request
 from jose import JWTError
 from sqlalchemy.orm import Session
 from datetime import timedelta
 from app.schemas.two_factor import AccessTokenResponse, TwoFactorChallengeResponse
 from app.db.session import SessionLocal 
-from app.schemas.user import UserCreate, UserOut, UserLogin, UserUpdateProfile
+from app.schemas.user import UserCreate, UserOut, UserLogin, UserUpdateProfile, UserOutWith2FA
 from app.models.user import User 
 from app.core.security import get_password_hash, create_access_token, authenticate_user, create_remember_device_token, verify_remember_device_token
 from app.core.config import ACCESS_TOKEN_EXPIRE_MINUTES
@@ -62,6 +63,7 @@ def login(form_data: UserLogin, db: Session = Depends(get_db)):
 
 @router.post("/login") 
 async def login(
+    request: Request,
     response: JSONResponse, 
     form_data: UserLogin, 
     db: Session = Depends(get_db)
@@ -328,7 +330,7 @@ async def disable_2fa_endpoint(
 
 
 #
-@router.post("/users/2fa/verify-login") 
+@router.post("/2fa/verify-login") 
 async def verify_2fa_login(
     payload: TwoFactorLoginVerifyRequest,
     response: JSONResponse, 
@@ -436,3 +438,21 @@ async def verify_2fa_login(
 
 
     raise credentials_exception
+
+
+@router.get(
+    "/me/profile",
+    response_model=UserOutWith2FA,
+    summary="Obtener perfil de usuario con estado de 2FA"
+)
+async def read_users_me_profile(
+    current_user: User = Depends(get_current_active_user) # User es app.models.user.User
+):
+    """
+    Devuelve la información del usuario actualmente autenticado,
+    incluyendo si tiene 2FA habilitada.
+    """
+    # Ya no necesitas calcular 'is_enabled' manualmente aquí.
+    # UserOutWith2FA.from_orm recogerá la propiedad 'is_2fa_enabled' del modelo User.
+    user_data = UserOutWith2FA.from_orm(current_user)
+    return user_data
