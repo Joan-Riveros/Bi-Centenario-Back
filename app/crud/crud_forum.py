@@ -1,6 +1,8 @@
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from typing import List, Optional
+from app.models.forum import ForumCategory
+
 
 from app.models.forum import ForumCategory, ForumTopic, ForumPost
 from app.models.user import User 
@@ -106,3 +108,7 @@ def search_forum_posts(
     if topic_id is not None:
         query = query.filter(ForumPost.topic_id == topic_id)
     return query.order_by(ForumPost.created_at.desc()).offset(skip).limit(limit).all()
+
+def get_forum_category_by_id(db: Session, category_id: int):
+    return db.query(ForumCategory).filter(ForumCategory.id == category_id).first()
+
