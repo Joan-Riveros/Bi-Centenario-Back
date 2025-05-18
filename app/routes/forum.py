@@ -3,11 +3,8 @@ from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from typing import List, Optional
 from app.core.enums import UserRole
-
 from app.db.session import get_db 
-
 from app.models.user import User
-
 from app.schemas.forum import (
     ForumCategoryCreate, ForumCategoryOut,
     ForumTopicCreate, ForumTopicOut,
@@ -15,19 +12,29 @@ from app.schemas.forum import (
 )
 from app.core.dependencies import get_current_user
 from app.core.dependencies import require_role 
-
-
 from app.crud import crud_forum
 
 router = APIRouter()
 
 # -------- CATEGORIAS --------
-@router.post(
-    "/categories/",
-    response_model=ForumCategoryOut,
-    status_code=status.HTTP_201_CREATED,
-    summary="Crear una nueva categoria del foro (Solo Admin)"
-)
+@router.post("/categories/", response_model=ForumCategoryOut, status_code=201)
+def create_category_route(
+    category_in: ForumCategoryCreate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_role([UserRole.ADMINISTRADOR]))
+):
+    existing = crud_forum.get_forum_category_by_name(db, category_in.name)
+    if existing:
+        raise HTTPException(status_code=409, detail="Ya existe una categoría con ese nombre")
+
+    try:
+        db_category = crud_forum.create_forum_category(db, category_in)
+        db.commit()
+        db.refresh(db_category)
+        return db_category
+    except Exception:
+        db.rollback()
+        raise HTTPException(status_code=500, detail="Error al crear la categoría")
 
 def create_category_route( 
     category_in: ForumCategoryCreate,
@@ -53,15 +60,11 @@ def create_category_route(
         )
     return db_category
 
-@router.get(
-    "/categories/",
-    response_model=List[ForumCategoryOut],
-    summary="Obtener lista de categorias del foro"
-)
-def get_categories_route( 
+@router.get("/categories/", response_model=List[ForumCategoryOut])
+def get_categories_route(
     db: Session = Depends(get_db),
-    skip: int = Query(0, ge=0, description="Nimero de items a saltar"),
-    limit: int = Query(10, ge=1, le=100, description="Numero maximo de items a retornar")
+    skip: int = Query(0, ge=0),
+    limit: int = Query(10, ge=1, le=100)
 ):
     return crud_forum.get_forum_categories(db=db, skip=skip, limit=limit)
 
@@ -196,3 +199,4 @@ def search_responses_route(
     return crud_forum.search_forum_posts(
         db=db, keyword=keyword, topic_id=topic_id, skip=skip, limit=limit
     )
+
