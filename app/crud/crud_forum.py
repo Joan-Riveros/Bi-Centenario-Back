@@ -17,7 +17,10 @@ def get_forum_category_by_name(db: Session, name: str) -> Optional[ForumCategory
 def create_forum_category(db: Session, category_in: ForumCategoryCreate) -> ForumCategory:
     db_category = ForumCategory(**category_in.model_dump())
     db.add(db_category)
+    db.commit()  # ← necesario para guardar
+    db.refresh(db_category)
     return db_category
+
 
 def get_forum_categories(db: Session, skip: int = 0, limit: int = 10) -> List[ForumCategory]:
     return db.query(ForumCategory).order_by(ForumCategory.name).offset(skip).limit(limit).all()
@@ -112,3 +115,20 @@ def search_forum_posts(
 def get_forum_category_by_id(db: Session, category_id: int):
     return db.query(ForumCategory).filter(ForumCategory.id == category_id).first()
 
+def get_topic_with_post_count(db: Session, category_id: int, skip: int = 0, limit: int = 10):
+    from sqlalchemy import func
+    from app.models.forum import ForumTopic, ForumPost
+
+    return (
+        db.query(
+            ForumTopic,
+            func.count(ForumPost.id).label("respuestas_count")
+        )
+        .outerjoin(ForumPost, ForumTopic.id == ForumPost.topic_id)
+        .filter(ForumTopic.category_id == category_id)
+        .group_by(ForumTopic.id)
+        .order_by(ForumTopic.created_at.desc())
+        .offset(skip)
+        .limit(limit)
+        .all()
+    )

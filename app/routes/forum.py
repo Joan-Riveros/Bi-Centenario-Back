@@ -73,6 +73,14 @@ def get_topics_route(
 ):
     return crud_forum.get_forum_topics(db, category_id, skip, limit)
 
+@router.get("/topics/{topic_id}", response_model=ForumTopicOut)
+def get_topic_detail(topic_id: int, db: Session = Depends(get_db)):
+    topic = crud_forum.get_forum_topic_by_id(db, topic_id)
+    if not topic:
+        raise HTTPException(status_code=404, detail="Tema no encontrado")
+    return topic
+
+
 # -------- RESPUESTAS (POSTS) --------
 @router.post("/posts/", response_model=ForumPostOut, status_code=201)
 def create_post_route(
@@ -126,3 +134,19 @@ def search_responses_route(
     limit: int = Query(10, ge=1, le=50)
 ):
     return crud_forum.search_forum_posts(db, keyword, topic_id, skip, limit)
+
+@router.get("/topics-with-count", summary="Temas con cantidad de respuestas")
+def get_topics_with_count(
+    category_id: int,
+    db: Session = Depends(get_db),
+    skip: int = 0,
+    limit: int = 10,
+):
+    result = crud_forum.get_topic_with_post_count(db, category_id, skip, limit)
+    return [
+        {
+            **t[0].__dict__,
+            "respuestas_count": t[1]
+        }
+        for t in result
+    ]
