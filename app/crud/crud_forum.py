@@ -1,6 +1,8 @@
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from typing import List, Optional
+from app.models.forum import ForumCategory
+
 
 from app.models.forum import ForumCategory, ForumTopic, ForumPost
 from app.models.user import User 
@@ -15,7 +17,10 @@ def get_forum_category_by_name(db: Session, name: str) -> Optional[ForumCategory
 def create_forum_category(db: Session, category_in: ForumCategoryCreate) -> ForumCategory:
     db_category = ForumCategory(**category_in.model_dump())
     db.add(db_category)
+    db.commit()  # ← necesario para guardar
+    db.refresh(db_category)
     return db_category
+
 
 def get_forum_categories(db: Session, skip: int = 0, limit: int = 10) -> List[ForumCategory]:
     return db.query(ForumCategory).order_by(ForumCategory.name).offset(skip).limit(limit).all()
@@ -106,3 +111,6 @@ def search_forum_posts(
     if topic_id is not None:
         query = query.filter(ForumPost.topic_id == topic_id)
     return query.order_by(ForumPost.created_at.desc()).offset(skip).limit(limit).all()
+
+def get_forum_category_by_id(db: Session, category_id: int):
+    return db.query(ForumCategory).filter(ForumCategory.id == category_id).first()

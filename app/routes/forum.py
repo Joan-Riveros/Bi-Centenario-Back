@@ -184,6 +184,15 @@ def search_topics_route(
 ):
     return crud_forum.search_forum_topics(db=db, keyword=keyword, skip=skip, limit=limit)
 
+#cambios
+@router.get("/topics/{topic_id}", response_model=ForumTopicOut)
+def get_topic_detail(topic_id: int, db: Session = Depends(get_db)):
+    topic = crud_forum.get_forum_topic_by_id(db, topic_id)
+    if not topic:
+        raise HTTPException(status_code=404, detail="Tema no encontrado")
+    return topic
+#
+
 @router.get(
     "/search/responses",
     response_model=List[ForumPostOut],
