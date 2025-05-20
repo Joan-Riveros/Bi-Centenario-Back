@@ -1,10 +1,10 @@
-from .user import UserBase # O los que tengas definidos
+from .user import UserBase 
 from .epoca import Epoca, EpocaCreate, EpocaUpdate, EpocaBase
 from .region import Region, RegionCreate, RegionUpdate, RegionBase
 from .category import Category, CategoryCreate, CategoryUpdate, CategoryBase
 from .tag import Tag, TagCreate, TagUpdate, TagBase
 from .historical_event import HistoricalEvent, HistoricalEventCreate, HistoricalEventUpdate, HistoricalEventBase
-from .document import DocumentMinimal # Añadir esta importación
+from .document import DocumentMinimal 
 from .upload_privilege_request import (
     UploadPrivilegeRequest,
     UploadPrivilegeRequestCreate,
@@ -17,4 +17,4 @@ from .document_access_request import (
     DocumentAccessRequestUpdate,
     DocumentAccessRequestBase
 )
-from .document import Document, DocumentCreate, DocumentUpdate, DocumentBase, DocumentMinimal, DocumentLevelUpdate # Añadir DocumentLevelUpdate
+from .document import Document, DocumentCreate, DocumentUpdate, DocumentBase, DocumentMinimal, DocumentLevelUpdate 

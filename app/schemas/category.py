@@ -1,4 +1,3 @@
-# app/schemas/category.py
 from pydantic import BaseModel, ConfigDict
 from typing import Optional
 

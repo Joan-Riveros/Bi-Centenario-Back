@@ -22,6 +22,10 @@ from app.models.user import User
 from app.models.forum import ForumCategory, ForumTopic, ForumPost
 from app.models.notification import Notification 
 from app.models.two_factor import User2FASetting
+#documents
+from app.models.document import Document
+from app.models.epoca import Epoca  
+from app.models.region import Region    
 
 
 config = context.config

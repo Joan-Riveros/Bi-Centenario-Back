@@ -9,7 +9,7 @@ class UserBase(BaseModel):
     email: EmailStr
     nombre: str
 
-# --- Esquemas para Operaciones Especificas  ---
+# --- Esquemas para operaciones especificas  ---
 class UserCreate(UserBase):
     password: str
 
@@ -23,7 +23,7 @@ class UserLogin(BaseModel):
     email: EmailStr
     password: str
 
-# --- Esquemas para Autenticación y Tokens ---
+# --- Esquemas para autenticación y tokens ---
 class Token(BaseModel):
     access_token: str
     token_type: str
@@ -31,7 +31,7 @@ class Token(BaseModel):
 class TokenData(BaseModel):
     email: Optional[EmailStr] = None
 
-# --- Esquema para Actualización de Perfil por el propio usuario ---
+# --- Esquema para actualizacion de perfil por usuario ---
 class UserUpdateProfile(BaseModel):
     nombre: Optional[str] = None
     email: Optional[EmailStr] = None

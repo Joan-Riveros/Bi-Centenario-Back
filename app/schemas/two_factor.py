@@ -22,7 +22,7 @@ class LoginResponseBase(BaseModel):
 class AccessTokenResponse(LoginResponseBase): 
     access_token: str
     token_type: str = "bearer"
-    # Opcional: para informar al frontend si se establecio la cookie de "recordar dispositivo"
+    # Opcional: para informar al frontend cookie  "recordar dispositivo"
     # remember_device_set: Optional[bool] = None
 
 class TwoFactorChallengeResponse(LoginResponseBase):

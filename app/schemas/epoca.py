@@ -1,4 +1,3 @@
-# app/schemas/epoca.py
 from pydantic import BaseModel, ConfigDict
 from typing import Optional
 import datetime
@@ -12,7 +11,7 @@ class EpocaBase(BaseModel):
 class EpocaCreate(EpocaBase):
     pass
 
-class EpocaUpdate(BaseModel): # O hereda de EpocaBase y haz todos los campos opcionales
+class EpocaUpdate(BaseModel): 
     name: Optional[str] = None
     description: Optional[str] = None
     start_date: Optional[datetime.date] = None
@@ -23,4 +22,4 @@ class EpocaInDBBase(EpocaBase):
     model_config = ConfigDict(from_attributes=True)
 
 class Epoca(EpocaInDBBase):
-    pass # Por ahora, igual que EpocaInDBBase, se puede extender después
+    pass 
