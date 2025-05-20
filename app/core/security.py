@@ -38,10 +38,10 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
 def authenticate_user(db: Session, email: str, password: str) -> Optional[User]:
     user = db.query(User).filter(User.email == email).first()
     if not user:
-        logger.debug(f"Intento de autenticacipn fallido: Usuario no encontrado - {email}")
+        logger.debug(f"Intento de autenticacion fallido: Usuario no encontrado - {email}")
         return None
     if not verify_password(password, user.hashed_password):
-        logger.debug(f"Intento de autenticacipn fallido: Contraseña incorrecta para el usuario - {email}")
+        logger.debug(f"Intento de autenticacion fallido: Contraseña incorrecta para el usuario - {email}")
         return None
     logger.info(f"Usuario autenticado exitosamente: {email}")
     return user
@@ -64,7 +64,7 @@ def verify_password_reset_token(token: str) -> Optional[str]:
         if payload.get("scope") == "password_reset":
             email: Optional[str] = payload.get("sub")
             return email
-        logger.warning("Intento de verificación de token de reseteo con scope incorrecto")
+        logger.warning("Intento de verificacion de token de reseteo con scope incorrecto")
         return None
     except JWTError as e:
         logger.error(f"Error al decodificar token de reseteo de contraseña: {e}")

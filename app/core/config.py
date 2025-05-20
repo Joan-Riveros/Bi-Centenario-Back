@@ -12,7 +12,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES"))
 PROJECT_NAME: str = os.getenv("PROJECT_NAME", "Mi Repositorio Historico")
 PASSWORD_RESET_TOKEN_EXPIRE_HOURS: int = int(os.getenv("PASSWORD_RESET_TOKEN_EXPIRE_HOURS", "1"))
 
-# --- Configuración de Email ---
+# --- Configuracion de Email ---
 MAIL_USERNAME: str = os.getenv("MAIL_USERNAME")
 MAIL_PASSWORD: str = os.getenv("MAIL_PASSWORD")
 MAIL_FROM: str = os.getenv("MAIL_FROM")
@@ -27,7 +27,7 @@ MAIL_VALIDATE_CERTS: bool = str(os.getenv("MAIL_VALIDATE_CERTS", "True")).lower(
 FRONTEND_URL: str = os.getenv("FRONTEND_URL", "http://localhost:3000") 
 
 
-# Directorio raiz del proyecto (Bi-Centenario-Back)
+# Directorio raiz del proyecto 
 PROJECT_ROOT_DIR = Path(__file__).resolve().parent.parent.parent
 TEMPLATE_FOLDER_NAME: str = os.getenv("TEMPLATE_FOLDER", "app/templates/email") 
 TEMPLATE_ABSOLUTE_PATH = PROJECT_ROOT_DIR / TEMPLATE_FOLDER_NAME
@@ -58,6 +58,14 @@ if not TWO_FACTOR_ENCRYPTION_KEY:
     # from cryptography.fernet import Fernet
     # TWO_FACTOR_ENCRYPTION_KEY = Fernet.generate_key() # Solo para desarrollo y si se va a persistir
 
+    
+BASE_DIR = Path(__file__).resolve().parent 
+MEDIA_ROOT = BASE_DIR.parent / "media"
+#Documentos
 
-
-
+UPLOAD_DOCUMENTS_DIR: str = os.getenv("UPLOAD_DOCUMENTS_DIR", "media/documents")
+UPLOAD_COVERS_DIR: str = os.getenv("UPLOAD_COVERS_DIR", "media/previews")
+MAX_DOCUMENT_SIZE_MB = 100
+MAX_COVER_SIZE_MB = 5
+ALLOWED_DOCUMENT_EXTENSIONS = {".pdf", ".tiff", ".tif", ".jpg", ".jpeg", ".png"}
+ALLOWED_COVER_EXTENSIONS = {".jpg", ".jpeg", ".png"}
