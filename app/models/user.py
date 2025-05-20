@@ -15,7 +15,8 @@ class User(Base):
     role = Column(SAEnum(UserRole), nullable=False, default=UserRole.VISITANTE)
     #
     notifications = relationship("Notification", back_populates="recipient", cascade="all, delete-orphan")
-
+    #
+    #
     two_factor_setting = relationship(
         "User2FASetting",
         uselist=False,
@@ -29,3 +30,21 @@ class User(Base):
         if self.two_factor_setting:
             return self.two_factor_setting.is_enabled
         return False
+    
+    uploaded_documents = relationship(
+        "Document",
+        back_populates="uploader",
+        cascade="all, delete-orphan",
+    )
+    upload_privilege_requests = relationship(
+        "UploadPrivilegeRequest",
+        back_populates="requester",
+        cascade="all, delete-orphan" 
+    )
+
+    document_access_requests = relationship(
+        "DocumentAccessRequest",
+        back_populates="requester",
+        cascade="all, delete-orphan" 
+    )
+    
