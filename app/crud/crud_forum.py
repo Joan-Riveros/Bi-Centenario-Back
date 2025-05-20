@@ -17,7 +17,7 @@ def get_forum_category_by_name(db: Session, name: str) -> Optional[ForumCategory
 def create_forum_category(db: Session, category_in: ForumCategoryCreate) -> ForumCategory:
     db_category = ForumCategory(**category_in.model_dump())
     db.add(db_category)
-    db.commit()  # ← necesario para guardar
+    db.commit()  # necesario para guardar
     db.refresh(db_category)
     return db_category
 

@@ -19,7 +19,7 @@ def get_users(db: Session, skip: int = 0, limit: int = 100) -> List[User]:
     return db.query(User).order_by(User.id).offset(skip).limit(limit).all()
 
 
-# Funcion para el registro publico "endpoint /users/register"
+# Funcion para el registro publico
 def create_public_user(db: Session, user_in: UserCreate) -> User:
     hashed_password = get_password_hash(user_in.password)
     db_user = User(
