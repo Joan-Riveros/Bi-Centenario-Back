@@ -371,14 +371,12 @@ async def verify_2fa_login(
 
     two_fa_settings = crud_2fa.get_2fa_settings(db, user_id=user.id)
     if not two_fa_settings or not two_fa_settings.is_enabled:
-        # logger.error(f"Verificacion 2FA intentada para usuario {user_email} sin 2FA habilitada")
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="2FA no esta habilitada para este usuario")
 
     login_successful = False
 
     if payload.backup_code:
-        
-        # logger.info(f"Intentando verificar codigo de respaldo para {user_email}")
+    
         if crud_2fa.verify_and_use_backup_code(db, user_id=user.id, submitted_code=payload.backup_code):
             login_successful = True
             
@@ -446,13 +444,7 @@ async def verify_2fa_login(
     summary="Obtener perfil de usuario con estado de 2FA"
 )
 async def read_users_me_profile(
-    current_user: User = Depends(get_current_active_user) # User es app.models.user.User
+    current_user: User = Depends(get_current_active_user) 
 ):
-    """
-    Devuelve la información del usuario actualmente autenticado,
-    incluyendo si tiene 2FA habilitada.
-    """
-    # Ya no necesitas calcular 'is_enabled' manualmente aquí.
-    # UserOutWith2FA.from_orm recogerá la propiedad 'is_2fa_enabled' del modelo User.
     user_data = UserOutWith2FA.from_orm(current_user)
     return user_data
