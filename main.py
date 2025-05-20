@@ -3,6 +3,11 @@ from app.routes import user as user_public_router
 from app.routes import admin_users as admin_users_router 
 from app.routes import forum
 from app.routes import notification
+from app.routes import documents
+#documents
+from app.utils.file_system import ensure_upload_dirs_exist
+from app.routes import admin_management, researcher_requests, document_proposals
+#
 #FRONTEND
 from fastapi.middleware.cors import CORSMiddleware
 #
@@ -10,11 +15,11 @@ app = FastAPI(
     title="Repositorio de Documentos Historicos Digitalizados",
     description="API para la gestion y acceso a documentos historicos digitalizados",
     version="0.1.0", 
-    # metadatos API
+    
 )
 
 
-
+ensure_upload_dirs_exist()
 origins = [
     "http://localhost",         
     "http://localhost:3000",    
@@ -56,4 +61,30 @@ app.include_router(
     notification.router,
     prefix="/forum",
     tags=["Notificaciones"]
+)
+
+#documents
+app.include_router(
+    admin_management.router,
+    prefix="/admi",
+    tags=["Admin Management"], 
+
+)
+
+
+app.include_router(
+    researcher_requests.router,
+    prefix="/researcher",
+    tags=["Researcher Requests"])
+
+app.include_router( 
+    document_proposals.router,
+    prefix="/document-proposals", 
+    tags=["Document Proposals (Uploads)"],
+)
+
+app.include_router(
+    documents.router,
+    prefix="/documents",
+    tags=["Documents (General Access & Download)"]
 )

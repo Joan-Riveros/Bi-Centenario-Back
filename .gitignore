@@ -14,7 +14,7 @@ ENV/
 .idea/
 *.sublime-project
 *.sublime-workspace
-
+alembic/versions/
 # Environment variables
 .env
 .env.*
@@ -61,3 +61,6 @@ docker-compose.override.yml
 
 # Logs
 *.log
+
+
+media/
