@@ -7,10 +7,11 @@ from .user import UserOut as UserSchema
 from .document import DocumentMinimal as DocumentMinimalSchema
 
 class DocumentAccessRequestBase(BaseModel):
-    document_id: int # El usuario debe especificar a que documento solicita acceso
+    document_id: int 
 
 class DocumentAccessRequestCreate(DocumentAccessRequestBase):
-    reason: Optional[str] = None 
+
+    pass
 
 class DocumentAccessRequestUpdate(BaseModel): 
     status: RequestStatusEnum
@@ -18,14 +19,14 @@ class DocumentAccessRequestUpdate(BaseModel):
 
 class DocumentAccessRequestInDBBase(DocumentAccessRequestBase):
     id: int
-    user_id: int
+    user_id: int 
     request_date: datetime.datetime
     status: RequestStatusEnum
     admin_notes: Optional[str] = None
-    reason: Optional[str] = None 
+    
 
     model_config = ConfigDict(from_attributes=True)
 
 class DocumentAccessRequest(DocumentAccessRequestInDBBase):
-    requester: UserSchema 
+    requester: UserSchema
     document: DocumentMinimalSchema

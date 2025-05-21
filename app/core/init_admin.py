@@ -43,7 +43,7 @@ def create_default_admin():
         db.close()
 
 # Para ejecutar este script :
-# if __name__ == "__main__":
-#     print("Intentando crear usuario administrador por defecto...")
-#     create_default_admin()
-#     print("Proceso finalizado.")
+if __name__ == "__main__":
+    print("Intentando crear usuario administrador por defecto...")
+    create_default_admin()
+    print("Proceso finalizado.")

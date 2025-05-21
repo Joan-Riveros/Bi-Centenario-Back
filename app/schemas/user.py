@@ -68,3 +68,11 @@ class PasswordReset(BaseModel):
 class UserOutWith2FA(UserOut):
     is_2fa_enabled: bool
     model_config = {"from_attributes": True}
+
+# --- Necesario para llamar los nombres de los comentarios del foro ---
+class UserOutShort(BaseModel):
+    id: int
+    nombre: Optional[str] = None
+    email: EmailStr
+
+    model_config = {"from_attributes": True}

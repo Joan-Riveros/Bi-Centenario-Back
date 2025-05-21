@@ -1,10 +1,10 @@
 from .crud_upload_privilege_request import (
     get_upload_privilege_request,
     get_upload_privilege_requests_by_user,
-    get_pending_upload_request_by_user,
+    get_pending_upload_request_by_user_and_title,
     get_all_upload_privilege_requests,
     create_upload_privilege_request,
-    update_upload_privilege_request,
+    
     remove_upload_privilege_request
 )
 from .crud_document_access_request import (
@@ -61,4 +61,15 @@ from .crud_historical_event import (
     create_historical_event,
     update_historical_event,
     remove_historical_event
+)
+
+from .crud_rating import (
+    get_rating,
+    get_rating_by_user_and_document,
+    get_ratings_by_user,
+    get_ratings_for_document,
+    create_rating,
+    update_rating,
+    remove_rating,
+    remove_rating_by_user_and_document
 )

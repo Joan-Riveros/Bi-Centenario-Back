@@ -59,12 +59,12 @@ if not TWO_FACTOR_ENCRYPTION_KEY:
     # TWO_FACTOR_ENCRYPTION_KEY = Fernet.generate_key() # Solo para desarrollo y si se va a persistir
 
     
-BASE_DIR = Path(__file__).resolve().parent 
-MEDIA_ROOT = BASE_DIR.parent / "media"
+PROJECT_ROOT_DIR = Path(__file__).resolve().parent.parent.parent
+MEDIA_ROOT = PROJECT_ROOT_DIR / "media"
 #Documentos
 
-UPLOAD_DOCUMENTS_DIR: str = os.getenv("UPLOAD_DOCUMENTS_DIR", "media/documents")
-UPLOAD_COVERS_DIR: str = os.getenv("UPLOAD_COVERS_DIR", "media/previews")
+UPLOAD_DOCUMENTS_DIR = MEDIA_ROOT / "documents"
+UPLOAD_COVERS_DIR = MEDIA_ROOT / "previews"
 MAX_DOCUMENT_SIZE_MB = 100
 MAX_COVER_SIZE_MB = 5
 ALLOWED_DOCUMENT_EXTENSIONS = {".pdf", ".tiff", ".tif", ".jpg", ".jpeg", ".png"}

@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, Text, Float
 from sqlalchemy.orm import relationship 
-
+from app.models.association_tables import historical_event_regions_table
 from app.db.base import Base
 
 class Region(Base):
@@ -12,6 +12,8 @@ class Region(Base):
     latitude = Column(Float, nullable=True) 
     longitude = Column(Float, nullable=True) 
 
-    # Relaciones
-    # historical_events = relationship("HistoricalEvent", back_populates="region")
-    # documents = relationship("Document", back_populates="region")
+    historical_events = relationship(
+        "HistoricalEvent",
+        secondary=historical_event_regions_table, 
+        back_populates="regions" 
+    )

@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from typing import Optional
 from datetime import datetime
+from app.schemas.user import UserOutShort
 
 # ---------- CATEGORY ----------
 
@@ -43,10 +44,17 @@ class ForumPostBase(BaseModel):
 class ForumPostCreate(ForumPostBase):
     pass
 
+class ForumPostAuthorOut(BaseModel):
+    id: int
+    nombre: str
+
+    model_config = {"from_attributes": True}
+
 class ForumPostOut(ForumPostBase):
     id: int
     author_id: int
     created_at: datetime
     is_moderated: bool
+    author: Optional[UserOutShort]
 
     model_config = {"from_attributes": True}

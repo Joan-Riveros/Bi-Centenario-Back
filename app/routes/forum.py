@@ -13,6 +13,8 @@ from app.schemas.forum import (
 from app.core.dependencies import get_current_user
 from app.core.dependencies import require_role 
 from app.crud import crud_forum
+from sqlalchemy.orm import joinedload
+from app.models.forum import ForumPost
 
 router = APIRouter()
 
@@ -161,14 +163,18 @@ def get_posts_route(
     if topic_id is not None:
         topic = crud_forum.get_forum_topic_by_id(db, topic_id=topic_id)
         if not topic:
-             # Opcion 1: Devolver lista vacia
+            # Opcion 1: Devolver lista vacia
             # return []
             # Opcion 2: Devolver 404 
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Tema con ID {topic_id} no encontrado")
 
-    return crud_forum.get_forum_posts(
-        db=db, topic_id=topic_id, skip=skip, limit=limit
-    )
+    query = db.query(ForumPost).options(joinedload(ForumPost.author))
+
+    if topic_id is not None:
+        query = query.filter(ForumPost.topic_id == topic_id)
+
+    posts = query.offset(skip).limit(limit).all()
+    return posts
 
 # -------- BUSQUEDA --------
 @router.get(
@@ -208,4 +214,3 @@ def search_responses_route(
     return crud_forum.search_forum_posts(
         db=db, keyword=keyword, topic_id=topic_id, skip=skip, limit=limit
     )
-

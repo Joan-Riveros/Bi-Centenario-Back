@@ -20,3 +20,16 @@ document_historical_events_table = Table(
     Column("document_id", Integer, ForeignKey("documents.id"), primary_key=True),
     Column("historical_event_id", Integer, ForeignKey("historical_events.id"), primary_key=True)
 )
+
+collection_documents_table = Table(
+    "collection_documents", Base.metadata,
+    Column("collection_id", Integer, ForeignKey("collections.id"), primary_key=True),
+    Column("document_id", Integer, ForeignKey("documents.id"), primary_key=True)
+)
+
+historical_event_regions_table = Table(
+    "historical_event_regions", Base.metadata,
+    Column("historical_event_id", Integer, ForeignKey("historical_events.id"), primary_key=True),
+    Column("region_id", Integer, ForeignKey("regiones.id"), primary_key=True)
+)
+

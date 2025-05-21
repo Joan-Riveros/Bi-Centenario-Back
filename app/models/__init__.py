@@ -1,5 +1,8 @@
 from .user import User
-
+from .association_tables import document_categories_table, document_tags_table, document_historical_events_table, collection_documents_table, historical_event_regions_table
+from .collection import Collection
+from .rating import Rating
+from .comment import Comment
 from .notification import Notification
 from .two_factor import User2FASetting
 from .forum import ForumCategory, ForumTopic, ForumPost
@@ -11,4 +14,4 @@ from .document import Document
 from .historical_event import HistoricalEvent
 from .upload_privilege_request import UploadPrivilegeRequest 
 from .document_access_request import DocumentAccessRequest
-from .association_tables import document_categories_table, document_tags_table, document_historical_events_table
+

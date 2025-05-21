@@ -9,6 +9,8 @@ from app.models.user import User
 from app.models.notification import Notification
 from app.schemas.forum import ForumCategoryCreate, ForumTopicCreate, ForumPostCreate
 
+from sqlalchemy.orm import joinedload
+from app.models.forum import ForumPost
 # -------- CATEGORiAS --------
 
 def get_forum_category_by_name(db: Session, name: str) -> Optional[ForumCategory]:
@@ -53,13 +55,12 @@ def create_forum_post_with_notification(
     post_in: ForumPostCreate,
     author: User 
 ) -> ForumPost:
- 
+
     db_post = ForumPost(**post_in.model_dump(), author_id=author.id)
     db.add(db_post)
 
-   
+
     topic = get_forum_topic_by_id(db, topic_id=post_in.topic_id) 
-                                                                 
     
     if topic and topic.author_id != author.id:
         author_display_name = author.nombre if author.nombre else author.email
@@ -75,15 +76,17 @@ def create_forum_post_with_notification(
 
 def get_forum_posts(
     db: Session,
-    topic_id: Optional[int] = None,
-    skip: int = 0,
-    limit: int = 10
+    topic_id: Optional[int],
+    skip: int,
+    limit: int,
+    include_author: bool = True
 ) -> List[ForumPost]:
     query = db.query(ForumPost)
-    if topic_id is not None:
+    if include_author:
+        query = query.options(joinedload(ForumPost.author))
+    if topic_id:
         query = query.filter(ForumPost.topic_id == topic_id)
-    return query.order_by(ForumPost.created_at.asc()).offset(skip).limit(limit).all()
-
+    return query.offset(skip).limit(limit).all()
 
 # -------- BuSQUEDA --------
 

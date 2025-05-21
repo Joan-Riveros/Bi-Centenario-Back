@@ -1,6 +1,5 @@
 from typing import List, Optional, Union, Dict, Any
 from sqlalchemy.orm import Session
-
 from app.models.document_access_request import DocumentAccessRequest
 from app.schemas.document_access_request import DocumentAccessRequestCreate, DocumentAccessRequestUpdate
 from app.core.enums import RequestStatusEnum
@@ -31,7 +30,7 @@ def get_document_access_requests_for_document(
         .limit(limit)
         .all()
     )
-    
+
 def get_pending_document_access_request(
     db: Session, *, user_id: int, document_id: int
 ) -> Optional[DocumentAccessRequest]:
@@ -73,9 +72,8 @@ def create_document_access_request(
 ) -> DocumentAccessRequest:
     db_obj = DocumentAccessRequest(
         user_id=user_id,
-        document_id=obj_in.document_id,
-        reason=obj_in.reason
-        # request_date y status tienen defaults
+        document_id=obj_in.document_id
+        # request_date y status tienen defaults en el modelo
     )
     db.add(db_obj)
     db.commit()
@@ -95,7 +93,7 @@ def update_document_access_request(
 
     for field, value in update_data.items():
         setattr(db_obj, field, value)
-        
+
     db.add(db_obj)
     db.commit()
     db.refresh(db_obj)

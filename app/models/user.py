@@ -47,4 +47,21 @@ class User(Base):
         back_populates="requester",
         cascade="all, delete-orphan" 
     )
-    
+    #collections
+    collections = relationship(
+        "Collection",
+        back_populates="owner",
+        cascade="all, delete-orphan" 
+    )
+    #rating
+    ratings = relationship(
+        "Rating",
+        back_populates="rater",
+        cascade="all, delete-orphan" 
+    )
+    #comments
+    comments = relationship(
+        "Comment",
+        back_populates="commenter",
+        cascade="all, delete-orphan" 
+    )

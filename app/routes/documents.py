@@ -182,6 +182,59 @@ async def download_document_file(
         media_type='application/octet-stream' 
     )
 
+@router.get(
+    "/{document_id}/preview",
+    response_class=FileResponse,
+    summary="Previsualizar el documento PDF directamente en el navegador"
+)
+async def preview_document_file(
+    *,
+    db: Session = Depends(dependencies.get_db),
+    document_id: int,
+    current_user: Optional[models.User] = Depends(dependencies.get_current_user_or_none),
+):
+    db_document = crud.get_document(db=db, document_id=document_id)
+    if not db_document:
+        raise HTTPException(status_code=404, detail="Documento no encontrado")
+
+    # --- Control de acceso (igual que en /download)
+    can_access = False
+    if db_document.document_level == 1:
+        can_access = True
+    elif current_user:
+        if current_user.role == UserRole.ADMINISTRADOR:
+            can_access = True
+        elif current_user.id == db_document.uploader_id:
+            can_access = True
+        elif current_user.role == UserRole.INVESTIGADOR:
+            approved = crud.get_approved_document_access_request(
+                db=db, user_id=current_user.id, document_id=document_id
+            )
+            if approved:
+                can_access = True
+
+    if not can_access:
+        raise HTTPException(status_code=403, detail="No tienes permiso para ver este documento")
+
+    # --- Validación archivo físico
+    if not db_document.file_path:
+        raise HTTPException(status_code=404, detail="Documento sin archivo asociado")
+
+    from app.core.config import MEDIA_ROOT
+    from pathlib import Path
+
+    file_path = MEDIA_ROOT / db_document.file_path
+    if not file_path.is_file():
+        raise HTTPException(status_code=404, detail="Archivo no encontrado")
+
+    return FileResponse(
+        path=str(file_path),
+        media_type="application/pdf",
+        filename=Path(file_path).name,
+        headers={"Content-Disposition": "inline; filename=" + Path(file_path).name}
+    )
+
+
 
 @router.get(
     "/{document_id}/cover/download",

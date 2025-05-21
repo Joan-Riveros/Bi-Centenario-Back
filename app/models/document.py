@@ -2,7 +2,7 @@ import datetime
 from sqlalchemy import Column, Integer, String, Text, Boolean, DateTime, ForeignKey, Enum as SQLAlchemyEnum
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func 
-
+from app.models.association_tables import collection_documents_table
 from app.models.association_tables import (
     document_categories_table,
     document_tags_table,
@@ -67,6 +67,22 @@ class Document(Base):
     )
 
     # Otras relaciones 
-    # ratings = relationship("Rating", back_populates="document")
-    # comments = relationship("Comment", back_populates="document")
-    # collections = relationship("Collection", secondary="collection_documents", back_populates="documents")
+    
+    collections_containing_document = relationship(
+        "Collection",
+        secondary=collection_documents_table,
+        back_populates="documents"
+    )
+
+    ratings = relationship(
+        "Rating",
+        back_populates="document",
+        cascade="all, delete-orphan" 
+    )
+    comments = relationship(
+        "Comment",
+        back_populates="document",
+        cascade="all, delete-orphan", 
+        # Filtrar solo comentarios 
+        # primaryjoin="and_(Document.id == Comment.document_id, Comment.parent_comment_id == None)"
+    )

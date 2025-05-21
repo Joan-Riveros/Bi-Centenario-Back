@@ -27,6 +27,12 @@ from app.models.document import Document
 from app.models.epoca import Epoca  
 from app.models.region import Region    
 
+from app.models.association_tables import document_tags_table   
+from app.models.category import Category
+from app.models.tag import Tag
+from app.models.collection import Collection
+from app.models.rating import Rating
+from app.models.comment import Comment
 
 config = context.config
 

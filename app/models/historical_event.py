@@ -2,7 +2,7 @@ from sqlalchemy import Column, Integer, String, Text, Date, ForeignKey
 from sqlalchemy.orm import relationship
 from app.models.association_tables import document_historical_events_table
 from app.db.base import Base
-
+from app.models.association_tables import historical_event_regions_table
 class HistoricalEvent(Base):
     __tablename__ = "historical_events"
 
@@ -12,7 +12,6 @@ class HistoricalEvent(Base):
     event_date = Column(Date, nullable=True) 
 
     epoca_id = Column(Integer, ForeignKey("epocas.id"), nullable=True)
-    region_id = Column(Integer, ForeignKey("regiones.id"), nullable=True)
 
   
     epoca = relationship("Epoca", backref="historical_events") 
@@ -22,4 +21,9 @@ class HistoricalEvent(Base):
         "Document",
         secondary=document_historical_events_table,
         back_populates="historical_events"
+    )
+    regions = relationship(
+        "Region",
+        secondary=historical_event_regions_table,
+        back_populates="historical_events" 
     )

@@ -11,7 +11,3 @@ class Epoca(Base):
     description = Column(Text, nullable=True)
     start_date = Column(Date, nullable=True)
     end_date = Column(Date, nullable=True)
-
-    # Relaciones 
-    # historical_events = relationship("HistoricalEvent", back_populates="epoca")
-    # documents = relationship("Document", back_populates="epoca")
