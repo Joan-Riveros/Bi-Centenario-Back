@@ -20,7 +20,7 @@ def create_new_tag(
     db_tag = crud.tag.get_tag_by_name(db, name=tag.name)
     if db_tag:
         return db_tag 
-    return crud.tag.create_tag(db=db, tag=tag)
+    return crud.tag.create_tag(db=db, obj_in=tag)
 
 
 @router.get("/", response_model=List[schemas.Tag])

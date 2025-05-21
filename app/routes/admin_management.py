@@ -250,155 +250,179 @@ def delete_tag(
     return crud.remove_tag(db=db, tag_id=tag_id)
 
 
-# --- Gestión de Eventos Históricos  ---
-@router.post("/historical-events/", response_model=schemas.HistoricalEvent, status_code=status.HTTP_201_CREATED, summary="Crear nuevo Evento Historico")
-def create_historical_event(
+# --- Gestion de Eventos Históricos ---
+@router.post("/historical-events/", response_model=schemas.HistoricalEvent, status_code=status.HTTP_201_CREATED, summary="Crear nuevo Evento Histórico (Admin)")
+def create_historical_event_admin( 
     *,
     db: Session = Depends(dependencies.get_db),
     event_in: schemas.HistoricalEventCreate,
-    current_user: models.User = Depends(dependencies.require_admin_user)
+    
 ):
-    if event_in.epoca_id and not crud.get_epoca(db, event_in.epoca_id):
+    
+    if event_in.epoca_id and not crud.epoca.get_epoca(db, epoca_id=event_in.epoca_id):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Epoca con id {event_in.epoca_id} no encontrada")
-    if event_in.region_id and not crud.get_region(db, event_in.region_id):
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Región con id {event_in.region_id} no encontrada")
-    return crud.create_historical_event(db=db, obj_in=event_in)
+    
+    if event_in.region_ids:
+        for region_id_val in event_in.region_ids:
+            if not crud.region.get_region(db, region_id=region_id_val):
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Region con id {region_id_val} no encontrada")
+    
 
-@router.get("/historical-events/", response_model=List[schemas.HistoricalEvent], summary="Listar Eventos Historicos")
-def read_historical_events(
+    return crud.historical_event.create_historical_event(db=db, obj_in=event_in)
+
+@router.get("/historical-events/", response_model=List[schemas.HistoricalEvent], summary="Listar Eventos Historicos (Admin)")
+def read_historical_events_admin(
     db: Session = Depends(dependencies.get_db),
     skip: int = 0,
     limit: int = 100,
-    current_user: models.User = Depends(dependencies.require_admin_user)
-):
-    return crud.get_historical_events(db=db, skip=skip, limit=limit)
 
-@router.get("/historical-events/{event_id}", response_model=schemas.HistoricalEvent, summary="Obtener Evento Histprico por ID")
-def read_historical_event(
+):
+    return crud.historical_event.get_historical_events(db=db, skip=skip, limit=limit)
+
+@router.get("/historical-events/{event_id}", response_model=schemas.HistoricalEvent, summary="Obtener Evento Historico por ID (Admin)")
+def read_historical_event_admin(
     *,
     db: Session = Depends(dependencies.get_db),
     event_id: int,
-    current_user: models.User = Depends(dependencies.require_admin_user)
+
 ):
-    db_event = crud.get_historical_event(db=db, historical_event_id=event_id)
+    db_event = crud.historical_event.get_historical_event(db=db, historical_event_id=event_id)
     if not db_event:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Evento Histprico no encontrado")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Evento Historico no encontrado")
     return db_event
 
-@router.put("/historical-events/{event_id}", response_model=schemas.HistoricalEvent, summary="Actualizar Evento Historico")
-def update_historical_event(
+@router.put("/historical-events/{event_id}", response_model=schemas.HistoricalEvent, summary="Actualizar Evento Historico (Admin)")
+def update_historical_event_admin(
     *,
     db: Session = Depends(dependencies.get_db),
     event_id: int,
-    event_in: schemas.HistoricalEventUpdate,
-    current_user: models.User = Depends(dependencies.require_admin_user)
+    event_in: schemas.HistoricalEventUpdate, 
 ):
-    db_event = crud.get_historical_event(db=db, historical_event_id=event_id)
+    db_event = crud.historical_event.get_historical_event(db=db, historical_event_id=event_id)
     if not db_event:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Evento Historico no encontrado")
-    if event_in.epoca_id and not crud.get_epoca(db, event_in.epoca_id):
+    
+
+    if event_in.epoca_id is not None and not crud.epoca.get_epoca(db, epoca_id=event_in.epoca_id):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Epoca con id {event_in.epoca_id} no encontrada")
-    if event_in.region_id and not crud.get_region(db, event_in.region_id):
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Region con id {event_in.region_id} no encontrada")
-    return crud.update_historical_event(db=db, db_obj=db_event, obj_in=event_in)
+    
 
-@router.delete("/historical-events/{event_id}", response_model=schemas.HistoricalEvent, summary="Eliminar Evento Historico")
-def delete_historical_event(
+    if event_in.region_ids is not None: 
+        for region_id_val in event_in.region_ids:
+            if not crud.region.get_region(db, region_id=region_id_val):
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Región con id {region_id_val} no encontrada")
+    
+    return crud.historical_event.update_historical_event(db=db, db_obj=db_event, obj_in=event_in)
+
+@router.delete("/historical-events/{event_id}", response_model=schemas.HistoricalEvent, summary="Eliminar Evento Historico (Admin)")
+def delete_historical_event_admin(
     *,
     db: Session = Depends(dependencies.get_db),
     event_id: int,
-    current_user: models.User = Depends(dependencies.require_admin_user)
+
 ):
-    db_event = crud.get_historical_event(db=db, historical_event_id=event_id)
+    db_event = crud.historical_event.get_historical_event(db=db, historical_event_id=event_id)
     if not db_event:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Evento Historico no encontrado")
-    return crud.remove_historical_event(db=db, historical_event_id=event_id)
+    
+
+    removed_event = crud.historical_event.remove_historical_event(db=db, historical_event_id=event_id)
+    if not removed_event: 
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Evento Historico no encontrado durante la eliminación")
+    return removed_event
 
 
-# --- Gestión de Solicitudes de Privilegio de Subida ---
-@router.get("/upload-privilege-requests/", response_model=List[schemas.UploadPrivilegeRequest], summary="Listar todas las solicitudes de privilegio de subida")
-def read_all_upload_privilege_requests(
+# --- Gestion de Solicitudes de Propuesta de Documento  ---
+@router.get("/upload-privilege-requests/", response_model=List[schemas.UploadPrivilegeRequest], summary="Listar todas las propuestas de subida de documentos (Admin)")
+def read_all_upload_privilege_requests_admin(
     status_filter: Optional[RequestStatusEnum] = Query(None, alias="status"), 
     db: Session = Depends(dependencies.get_db),
     skip: int = 0,
     limit: int = 100,
-    current_user: models.User = Depends(dependencies.require_admin_user),
+    # current_user: models.User = Depends(dependencies.require_admin_user)
 ):
-    return crud.get_all_upload_privilege_requests(db=db, skip=skip, limit=limit, status=status_filter)
+    return crud.upload_privilege_request.get_all_upload_privilege_requests(db=db, skip=skip, limit=limit, status=status_filter)
 
-@router.get("/upload-privilege-requests/{request_id}", response_model=schemas.UploadPrivilegeRequest, summary="Obtener una solicitud de privilegio de subida por ID")
-def read_single_upload_privilege_request(
+@router.get("/upload-privilege-requests/{request_id}", response_model=schemas.UploadPrivilegeRequest, summary="Obtener una propuesta de subida por ID (Admin)")
+def read_single_upload_privilege_request_admin(
     request_id: int,
     db: Session = Depends(dependencies.get_db),
-    current_user: models.User = Depends(dependencies.require_admin_user),
+    # current_user: models.User = Depends(dependencies.require_admin_user)
 ):
-    db_request = crud.get_upload_privilege_request(db=db, request_id=request_id)
+    db_request = crud.upload_privilege_request.get_upload_privilege_request(db=db, request_id=request_id)
     if not db_request:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Solicitud no encontrada")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Propuesta de subida no encontrada")
     return db_request
 
-router.put("/upload-privilege-requests/{request_id}", response_model=schemas.UploadPrivilegeRequest, summary="Actualizar estado de una propuesta de documento")
-def update_upload_privilege_request_status( 
+@router.put("/upload-privilege-requests/{request_id}/status", response_model=schemas.UploadPrivilegeRequest, summary="Actualizar estado de una propuesta de documento (Admin)")
+def update_upload_request_status_admin( 
     request_id: int,
     request_update: schemas.UploadPrivilegeRequestUpdate, 
     db: Session = Depends(dependencies.get_db),
-    current_admin_user: models.User = Depends(dependencies.require_admin_user),
+    # current_admin_user: models.User = Depends(dependencies.require_admin_user)
 ):
-    db_request = crud.get_upload_privilege_request(db=db, request_id=request_id)
+    db_request = crud.upload_privilege_request.get_upload_privilege_request(db=db, request_id=request_id)
     if not db_request:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Propuesta de documento no encontrada")
-            
-    return crud.update_upload_privilege_request(db=db, db_obj=db_request, obj_in=request_update)
+    
+
+    return crud.upload_privilege_request.update_upload_privilege_request_status( 
+        db=db, db_obj=db_request, status=request_update.status, admin_notes=request_update.admin_notes
+    )
 
 
-
-# --- Gestión de Solicitudes de Acceso a Documentos ---
-@router.get("/document-access-requests/", response_model=List[schemas.DocumentAccessRequest], summary="Listar todas las solicitudes de acceso a documentos")
-def read_all_document_access_requests(
+# --- Gestion de Solicitudes de Acceso a Documentos (Admin) ---
+@router.get("/document-access-requests/", response_model=List[schemas.DocumentAccessRequest], summary="Listar todas las solicitudes de acceso a documentos (Admin)")
+def read_all_document_access_requests_admin(
     status_filter: Optional[RequestStatusEnum] = Query(None, alias="status"),
     db: Session = Depends(dependencies.get_db),
     skip: int = 0,
     limit: int = 100,
-    current_user: models.User = Depends(dependencies.require_admin_user),
+    # current_user: models.User = Depends(dependencies.require_admin_user)
 ):
-    return crud.get_all_document_access_requests(db=db, skip=skip, limit=limit, status=status_filter)
+    return crud.document_access_request.get_all_document_access_requests(db=db, skip=skip, limit=limit, status=status_filter)
 
-@router.get("/document-access-requests/{request_id}", response_model=schemas.DocumentAccessRequest, summary="Obtener una solicitud de acceso a documento por ID")
-def read_single_document_access_request(
+@router.get("/document-access-requests/{request_id}", response_model=schemas.DocumentAccessRequest, summary="Obtener una solicitud de acceso por ID (Admin)")
+def read_single_document_access_request_admin(
     request_id: int,
     db: Session = Depends(dependencies.get_db),
-    current_user: models.User = Depends(dependencies.require_admin_user),
+    # current_user: models.User = Depends(dependencies.require_admin_user)
 ):
-    db_request = crud.get_document_access_request(db=db, request_id=request_id)
+    db_request = crud.document_access_request.get_document_access_request(db=db, request_id=request_id)
     if not db_request:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Solicitud no encontrada")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Solicitud de acceso no encontrada")
     return db_request
 
-@router.put("/document-access-requests/{request_id}", response_model=schemas.DocumentAccessRequest, summary="Actualizar estado de solicitud de acceso a documento")
-def update_document_access_request_status(
+@router.put("/document-access-requests/{request_id}/status", response_model=schemas.DocumentAccessRequest, summary="Actualizar estado de solicitud de acceso (Admin)")
+def update_document_access_request_status_admin( 
     request_id: int,
-    request_update: schemas.DocumentAccessRequestUpdate,
+    request_update: schemas.DocumentAccessRequestUpdate, 
     db: Session = Depends(dependencies.get_db),
-    current_user: models.User = Depends(dependencies.require_admin_user),
+    # current_user: models.User = Depends(dependencies.require_admin_user)
 ):
-    db_request = crud.get_document_access_request(db=db, request_id=request_id)
+    db_request = crud.document_access_request.get_document_access_request(db=db, request_id=request_id)
     if not db_request:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Solicitud no encontrada")
-
-    return crud.update_document_access_request(db=db, db_obj=db_request, obj_in=request_update)
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Solicitud de acceso no encontrada")
 
 
-# --- Gestión de Nivel de Documento ---
-@router.patch("/documents/{document_id}/level", response_model=schemas.Document, summary="Actualizar el nivel de acceso de un documento")
-def update_document_access_level(
+    return crud.document_access_request.update_document_access_request(
+        db=db, db_obj=db_request, obj_in=request_update
+    )
+
+
+# --- Gestion de Nivel de Documento (Admin) ---
+@router.patch("/documents/{document_id}/level", response_model=schemas.Document, summary="Actualizar el nivel de acceso de un documento (Admin)")
+def update_document_access_level_admin( 
     document_id: int,
-    level_update: schemas.DocumentLevelUpdate,
+    level_update: schemas.DocumentLevelUpdate, 
     db: Session = Depends(dependencies.get_db),
-    current_user: models.User = Depends(dependencies.require_admin_user),
+    # current_user: models.User = Depends(dependencies.require_admin_user), # Covered by router dependency
 ):
-    db_document = crud.get_document(db=db, document_id=document_id)
+    db_document = crud.document.get_document(db=db, document_id=document_id) 
     if not db_document:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Documento no encontrado")
     
-    updated_document = crud.update_document(db=db, db_obj=db_document, obj_in={"document_level": level_update.document_level})
+    updated_document = crud.document.update_document(
+        db=db, db_obj=db_document, obj_in={"document_level": level_update.document_level}
+    )
     return updated_document

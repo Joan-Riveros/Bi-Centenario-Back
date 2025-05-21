@@ -18,3 +18,7 @@ from .document_access_request import (
     DocumentAccessRequestBase
 )
 from .document import Document, DocumentCreate, DocumentUpdate, DocumentBase, DocumentMinimal, DocumentLevelUpdate 
+from .document import DocumentInDBBase
+from .collection import Collection, CollectionCreate, CollectionUpdate, CollectionBase
+from .comment import Comment, CommentCreate, CommentUpdate, CommentBase
+from .rating import Rating, RatingCreate, RatingUpdate, RatingBase
