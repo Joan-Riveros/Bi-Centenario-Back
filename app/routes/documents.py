@@ -11,7 +11,7 @@ from app import crud, models, schemas
 from app.core import dependencies
 from app.core.enums import UserRole, RequestStatusEnum
 from app.core.config import MEDIA_ROOT
-
+import mimetypes 
 router = APIRouter()
 
 
@@ -239,7 +239,7 @@ async def preview_document_file(
 @router.get(
     "/{document_id}/cover/download",
     response_class=FileResponse,
-    summary="Descargar la imagen de portada de un documento"
+    summary="Servir la imagen de portada de un documento para visualización o descarga" # Summary actualizado
 )
 async def download_document_cover_image(
     *,
@@ -247,7 +247,6 @@ async def download_document_cover_image(
     document_id: int,
     current_user: Optional[models.User] = Depends(dependencies.get_current_user_or_none),
 ):
-
     db_document = crud.get_document(db=db, document_id=document_id)
     if not db_document:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Documento no encontrado")
@@ -255,6 +254,7 @@ async def download_document_cover_image(
     if not db_document.cover_image_path:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="El documento no tiene una imagen de portada asociada")
 
+    # --- Control de acceso (importante mantenerlo) ---
     can_access = False
     if db_document.document_level == 1: 
         can_access = True
@@ -271,25 +271,31 @@ async def download_document_cover_image(
                 can_access = True
     
     if not can_access:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="No tienes permiso para descargar esta imagen de portada.")
-
+        # En lugar de 403, podrías devolver una imagen placeholder o un 404 si prefieres no revelar su existencia.
+        # Pero 403 es correcto si el problema es el permiso.
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="No tienes permiso para ver esta imagen de portada.")
 
     cover_location_on_disk = MEDIA_ROOT / db_document.cover_image_path
 
     if not cover_location_on_disk.is_file():
+        # Podrías tener una imagen por defecto en el servidor y servirla aquí
+        # Por ejemplo: return FileResponse(path="path/to/default_cover.jpg", media_type="image/jpeg")
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Archivo de portada no encontrado en el servidor")
 
     cover_name_for_download = Path(db_document.cover_image_path).name
     
-    # detectar el medyatype
-    # import mimetypes
-    # media_type, _ = mimetypes.guess_type(str(cover_location_on_disk))
-    # if not media_type: media_type = 'application/octet-stream'
+    # --- DETECTAR MEDIA TYPE ---
+    media_type, _ = mimetypes.guess_type(str(cover_location_on_disk))
+    if not media_type:
+        media_type = 'application/octet-stream' # Como fallback, pero idealmente debería ser un tipo de imagen
 
     return FileResponse(
         path=str(cover_location_on_disk),
-        filename=cover_name_for_download,
-        media_type='application/octet-stream' 
+        filename=cover_name_for_download, # filename es más para sugerir un nombre al descargar
+        media_type=media_type,
+        # Para visualización inline, puedes añadir:
+        # headers={"Content-Disposition": f"inline; filename=\"{cover_name_for_download}\""}
+        # Aunque para <img>, el media_type es lo más importante.
     )
 
 #post document

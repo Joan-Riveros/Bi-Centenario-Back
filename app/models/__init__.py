@@ -12,6 +12,6 @@ from .epoca import Epoca
 from .region import Region
 from .document import Document
 from .historical_event import HistoricalEvent
-from .upload_privilege_request import UploadPrivilegeRequest 
+from .upload_privilege_request import UploadPrivilegeRequest
 from .document_access_request import DocumentAccessRequest
 

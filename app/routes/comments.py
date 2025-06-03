@@ -21,7 +21,7 @@ def create_comment(
     Crea un nuevo comentario en un documento o una respuesta a un comentario existente
     """
 
-    if not crud.document.get_document(db, document_id=comment_in.document_id):
+    if not crud.get_document(db, document_id=comment_in.document_id):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Documento con id {comment_in.document_id} no encontrado")
 
 
@@ -33,7 +33,7 @@ def create_comment(
         if parent_comment.document_id != comment_in.document_id:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="La respuesta debe pertenecer al mismo documento que el comentario padre")
             
-    return crud.comment.create_comment(db=db, obj_in=comment_in, user_id=current_user.id)
+    return crud.create_comment(db=db, obj_in=comment_in, user_id=current_user.id)
 
 @router.get("/document/{document_id}", response_model=List[schemas.Comment], summary="Listar comentarios de un documento")
 def read_comments_for_document(
@@ -50,7 +50,7 @@ def read_comments_for_document(
     # if not crud.document.get_document(db, document_id=document_id):
     #     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Documento con id {document_id} no encontrado.")
         
-    return crud.comment.get_comments_for_document(db=db, document_id=document_id, skip=skip, limit=limit)
+    return crud.crud_comments.get_comments_for_document(db=db, document_id=document_id, skip=skip, limit=limit)
 
 @router.get("/{comment_id}/replies", response_model=List[schemas.Comment], summary="Listar respuestas de un comentario")
 def read_replies_for_comment(

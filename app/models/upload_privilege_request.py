@@ -6,7 +6,7 @@ from app.db.base import Base
 from app.core.enums import RequestStatusEnum 
 
 class UploadPrivilegeRequest(Base):
-    __tablename__ = "document_approval_requests" 
+    __tablename__ = "upload_privilege_requests" 
 
     id = Column(Integer, primary_key=True, index=True)
     requester_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True) 
@@ -34,7 +34,7 @@ class UploadPrivilegeRequest(Base):
     created_document_id = Column(Integer, ForeignKey("documents.id"), nullable=True, unique=True) 
 
     # --- Relaciones ---
-    requester = relationship("User", back_populates="document_approval_requests") 
+    requester = relationship("User", back_populates="upload_privilege_requests") 
 
     created_document = relationship("Document", backref="approval_request") 
 

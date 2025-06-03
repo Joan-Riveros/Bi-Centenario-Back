@@ -73,3 +73,11 @@ from .crud_rating import (
     remove_rating,
     remove_rating_by_user_and_document
 )
+
+from .crud_comments import (
+    get_comment,
+    get_comments_for_document,
+    create_comment,
+    update_comment,
+    remove_comment
+)

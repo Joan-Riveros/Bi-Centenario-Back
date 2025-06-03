@@ -15,7 +15,7 @@ class HistoricalEvent(Base):
 
   
     epoca = relationship("Epoca", backref="historical_events") 
-    region = relationship("Region", backref="historical_events") 
+    #region = relationship("Region", backref="historical_events") 
 
     documents = relationship(
         "Document",

@@ -6,7 +6,7 @@ from app.routes import notification
 from app.routes import documents
 #documents
 from app.utils.file_system import ensure_upload_dirs_exist
-from app.routes import admin_management, researcher_requests, document_proposals, collections, ratings, collections
+from app.routes import admin_management, researcher_requests, document_proposals, collections, ratings, comments
 #
 #FRONTEND
 from fastapi.middleware.cors import CORSMiddleware
@@ -101,7 +101,7 @@ app.include_router(
     tags=["Ratings"]
 )
 app.include_router(
-    ratings.router,
-    prefix="/ratings",
-    tags=["ratings"]
+    comments.router,
+    prefix="/comments",
+    tags=["comments"]
 )

@@ -29,5 +29,5 @@ class CommentInDBBase(CommentBase):
 
 class Comment(CommentInDBBase): 
     commenter: UserOutShort 
-    replies: List['Comment'] = [] 
+    replies: List['Comment'] = Field(default_factory=list)
 
